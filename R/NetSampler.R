@@ -39,23 +39,29 @@
 #' - netlinks.txt --  links in red or blue if connect subnet or not
 #' @export
 NetSampler <-
-  function(net_name = "samplenetwork.txt",
-           out_name  = "sampleout.txt",
+  function(network_in,
            crit = c(1,0),
            key_nodes = c(10, 50, 10, 1000),
            anfn = 0.5,
            numb_hidden = 0,
            hidden_modules = c(1,5,6,0,0,0,0,0,0,0)) {
-    .Fortran(
+
+    net <- as.integer(as.matrix(as_adjacency_matrix(network_in)))
+    n <- sqrt(length(net))
+
+    res <- .Fortran(
       "subsampling",
-      net_name,
-      out_name,
+      as.intger(net),
+      out = integer(),
       as.integer(crit),
       as.integer(key_nodes),
       as.single(anfn),
       as.integer(numb_hidden),
       as.integer(hidden_modules)
+      as.integer(n)
     )
+
+    res$out
   }
 
 

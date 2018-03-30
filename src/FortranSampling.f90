@@ -80,10 +80,12 @@ CHARACTER*60, SAVE :: name_links,name_nodes,name_sampled
 END MODULE globalvar
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-SUBROUTINE subsampling(net_name,out_name,crit,key_nodes,anfn,numb_hidden,hidden_modules)
+SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, size_n)
 USE globalvar
-CHARACTER*40, INTENT(IN) :: net_name
-CHARACTER*40, INTENT(IN) :: out_name
+integer net_in(*)
+integer net_out(*)
+integer size_n(*)
+
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN), DIMENSION(4) :: key_nodes
 INTEGER, INTENT(IN) :: numb_hidden
@@ -113,31 +115,17 @@ nfn = int(anfn)
 ! Set names for input and output files in sub-directories
 ! output_gen and output_sampled
 !
-! name_net_net.txt  --  input network file
 ! name_net_prop.txt  --  input properties file
-! name_net_out_name.txt  -- output file with sampled data
 ! name_net_out_name_links.txt -- links with colors
 ! name_net_out_name_nodes.txt  --  nodes with colors
 ! name_net_out_name_sampled.txt  --  sampled network
 
-name_network = "./output_gen/"//trim(net_name)//"_net.txt"
-prop_network = "./output_gen/"//trim(net_name)//"_prop.txt"
-out_file = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//".txt"
-name_links = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//"_links.txt"
-name_nodes = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//"_nodes.txt"
-name_sampled = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//"_sampled.txt"
 
 ! read network
-OPEN(UNIT=10,FILE=name_network,STATUS='old')
+!OPEN(UNIT=10,FILE=name_network,STATUS='old')
 
 k = 0
-n = 0
-! find network size
-do while (k == 0)
-  read(10,*,iostat=k) i,j
-  if(i > n) n = i
-  if(j > n) n = j
-end do
+n = size_n(1)
 
 ALLOCATE (a_aux(n,n))
 ALLOCATE (v(n),vk(n))
@@ -156,18 +144,35 @@ CALL init_random_seed()
 REWIND(UNIT=10)
 k = 0
 a = 0
-do while (k == 0)
-  read(10,*,iostat=k) i,j
-    a(i,j) = 1
-  a(j,i) = 1
+
+!do while (k == 0)
+!  read(10,*,iostat=k) i,j
+!    a(i,j) = 1
+!  a(j,i) = 1
+!    if(neigh_crit == 1) then
+!        CALL RANDOM_NUMBER(aux)  ! assign weights to links
+!        auxw = log(1.0/aux)      ! following exponential distribution
+!        w(i,j) = auxw
+!        w(j,i) = auxw
+!    end if
+!end do
+!CLOSE(10)
+
+
+! Read in network from integer vector
+do i=1,n
+  do j=1,n
+    a(i,j) = net_in(i + (j-1) * n)
     if(neigh_crit == 1) then
         CALL RANDOM_NUMBER(aux)  ! assign weights to links
         auxw = log(1.0/aux)      ! following exponential distribution
         w(i,j) = auxw
         w(j,i) = auxw
     end if
+  end do
 end do
-CLOSE(10)
+
+
 
 ALLOCATE(degori(n))
 degori = sum(a,DIM=1)
@@ -478,19 +483,13 @@ do while (m <= mf)
     varhidden = sqrt(varhidden/anr)
 
     ! print results on screen and file
-!    print 112, m,amtot,varm,avmaxcluster,varmax,avmaxcluster/amtot,varquo,avnumbcluster,varnumb,avhiddentot,varhidden
     write(10,112) m,amtot,varm,avmaxcluster,varmax,avmaxcluster/amtot,varquo,avnumbcluster,varnumb,avhiddentot,varhidden
     m = m + mstep
   DEALLOCATE (row,col)
 end do
 
-
 close(10)
 
-!CALL RANDOM_SEED(get=iseed)
-!OPEN(UNIT=50,FILE='./input/seed.in',STATUS='OLD', POSITION='REWIND')
-!WRITE (50,*) iseed
-!close(50)
 
 DEALLOCATE(v,vk,prob_aux,key_prob,maxsizev,nclustersv,mnewv,hiddenv)
 DEALLOCATE(a,a_aux,idx,modsize,module_status)
@@ -500,10 +499,10 @@ DEALLOCATE(a,a_aux,idx,modsize,module_status)
 
 
 ! save info on log file
-OPEN(UNIT=20,FILE='./output_sampled/log_sampled.txt',STATUS='OLD', POSITION='APPEND')
-WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
-CLOSE(20)
-901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)
+!OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='OLD', POSITION='APPEND')
+!WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
+!CLOSE(20)
+!901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)
 
 END SUBROUTINE subsampling
 
@@ -518,7 +517,7 @@ ALLOCATE (prob(n))
 
 prob = 0.0
 IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
-    OPEN(UNIT=30,FILE='./output_sampled/abund.txt',STATUS='UNKNOWN')
+    OPEN(UNIT=30,FILE='./abund.txt',STATUS='UNKNOWN')
     IF(icrit > 0) THEN
         np = 10000
         ALLOCATE (x(0:np),rhoc(0:np),prob_aux(0:np))
@@ -568,7 +567,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(30)
 
     ELSE IF(icrit == 3) THEN     ! exponential abundance distribution
-        OPEN(UNIT=30,FILE='./output_sampled/abund.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=30,FILE='./abund.txt',STATUS='UNKNOWN')
 !        print *, 'Sampling key nodes according to exponential abundance distribution'
         do im=1,imods
             if(im == 1) then
@@ -596,7 +595,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(30)
 
     ELSE IF(icrit == 4) THEN                        ! sample according to degree
-        OPEN(UNIT=20,FILE='./output_sampled/degree.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=20,FILE='./degree.txt',STATUS='UNKNOWN')
 !        print *, 'Sampling key nodes according to degree'
         prob = sum(a,DIM=1)
         DO im=1,imods
@@ -621,7 +620,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(20)
 
     ELSE IF(icrit == 5) THEN                        ! sample according to module
-        OPEN(UNIT=20,FILE='./output_sampled/module.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=20,FILE='module.txt',STATUS='UNKNOWN')
 !        print *, 'Sampling key nodes according to module probabilities'
         do im=1,imods
             if(im == 1) then
@@ -666,7 +665,7 @@ USE globalvar
 CHARACTER*4 node1,node2
 
 ! save subnetwork
-OPEN(UNIT=21,FILE=name_sampled,STATUS='UNKNOWN')
+OPEN(UNIT=21,FILE='sampled.txt',STATUS='UNKNOWN')
     do iw=1,mnew
         CALL NUMBSTR(4,iw,node1)
         do jw=iw+1,mnew
@@ -680,7 +679,7 @@ CLOSE(21)
 
 ! save node color = red if belonging to subnetwork or blue if it does not
 ! idx(iw) = 0 if iw is not in subnetwork
-OPEN(UNIT=21,FILE=name_nodes,STATUS='UNKNOWN')
+OPEN(UNIT=21,FILE='nodes.txt',STATUS='UNKNOWN')
     do iw=1,n
         CALL NUMBSTR(4,iw,node1)
         if(idx(iw) == 0) then
@@ -692,7 +691,7 @@ OPEN(UNIT=21,FILE=name_nodes,STATUS='UNKNOWN')
 CLOSE(21)
 
 ! save link color = red if belonging to subnetwork or blue if it does not
-OPEN(UNIT=21,FILE=name_links,STATUS='UNKNOWN')
+OPEN(UNIT=21,FILE='links.txt',STATUS='UNKNOWN')
     do iw=1,n
         CALL NUMBSTR(4,iw,node1)
         do jw=iw+1,n
@@ -735,7 +734,7 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-OPEN(UNIT=20,FILE='./output_sampled/lognormal.txt',STATUS='UNKNOWN')
+OPEN(UNIT=20,FILE='./lognormal.txt',STATUS='UNKNOWN')
 do i=1,np
 write(20,*) x(i),rho(i),rhoc(i)
 end do
@@ -771,7 +770,7 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-OPEN(UNIT=20,FILE='./output_sampled/logfisher.txt',STATUS='UNKNOWN')
+OPEN(UNIT=20,FILE='./logfisher.txt',STATUS='UNKNOWN')
 do i=1,np
 write(20,*) x(i),rho(i),rhoc(i)
 end do
