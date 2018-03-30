@@ -503,7 +503,7 @@ DEALLOCATE(a,a_aux,idx,modsize,module_status)
 
 
 ! save info on log file
-OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='OLD', POSITION='APPEND')
+OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='UNKNOWN')
 WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
 CLOSE(20)
 901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)

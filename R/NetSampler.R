@@ -1,7 +1,7 @@
 #' Network Sampling Routine
 #'
-#' @param net_name a name for the network
-#' @param out_name a name for the output file
+#' @param network_in input network (as igraph object)
+#' @param module_sizes integer vector giving the size of each module (optional)
 #' @param crit sampling criteria for key nodes and neighbors, see details
 #' @param key_nodes number of key nodes to sample, from mi to mf at steps of delta-m
 #' and number of realizations nr mi, mf, delta-m, nr
@@ -38,9 +38,7 @@
 #' - netnodes.txt -- nodes in red or blue if belong subnet or not
 #' - netlinks.txt --  links in red or blue if connect subnet or not
 #' @export
-#' @examples
-#' net <- netgen()
-#' netsample(net)
+#' @importFrom igraph cluster_edge_betweenness as.undirected groups as_adjacency_matrix
 netsample <-
   function(network_in,
            module_sizes = NULL,
@@ -79,6 +77,7 @@ netsample <-
     )
 
     res$out
+
   }
 
 

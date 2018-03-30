@@ -9,6 +9,10 @@ netsample(network_in, module_sizes = NULL, crit = c(1, 0),
   hidden_modules = c(1, 5, 6, 0, 0, 0, 0, 0, 0, 0))
 }
 \arguments{
+\item{network_in}{input network (as igraph object)}
+
+\item{module_sizes}{integer vector giving the size of each module (optional)}
+
 \item{crit}{sampling criteria for key nodes and neighbors, see details}
 
 \item{key_nodes}{number of key nodes to sample, from mi to mf at steps of delta-m
@@ -19,10 +23,6 @@ and number of realizations nr mi, mf, delta-m, nr}
 \item{numb_hidden}{number of modules to exclude}
 
 \item{hidden_modules}{list of modules to exclude (max 10 modules; only the first numb_hidden are used)}
-
-\item{net_name}{a name for the network}
-
-\item{out_name}{a name for the output file}
 }
 \value{
 output files are:
@@ -64,8 +64,4 @@ criterion for neighbors
 \item 0 = random
 \item 1 = weighted according to exponential distribution
 }
-}
-\examples{
-net <- netgen()
-netsample(net)
 }
