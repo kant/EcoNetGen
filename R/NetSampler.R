@@ -38,7 +38,10 @@
 #' - netnodes.txt -- nodes in red or blue if belong subnet or not
 #' - netlinks.txt --  links in red or blue if connect subnet or not
 #' @export
-NetSampler <-
+#' @examples
+#' net <- netgen()
+#' netsample(net)
+netsample <-
   function(network_in,
            module_sizes = NULL,
            crit = c(1,0),
@@ -48,22 +51,23 @@ NetSampler <-
            hidden_modules = c(1,5,6,0,0,0,0,0,0,0)
            ) {
 
+
+
+    if(is.null(module_sizes)){
+      community <- igraph::cluster_edge_betweenness(igraph::as.undirected(network_in))
+      module_sizes <- vapply(igraph::groups(community), length, integer(1))
+    }
+
     ## Convert igraph to integer vector
     net <- as.integer(as.matrix(igraph::as_adjacency_matrix(network_in)))
 
     ## number of nodes
     n <- sqrt(length(net))
 
-    if(is.null(module_sizes)){
-      community <- igraph::cluster_edge_betweenness(igraph::as.undirected(network))
-      module_sizes <- vapply(igraph::groups(community), length, integer(1))
-    }
-
-
     res <- .Fortran(
       "subsampling",
       as.integer(net),
-      out = integer(),
+      out = integer(1L),
       as.integer(crit),
       as.integer(key_nodes),
       as.single(anfn),
