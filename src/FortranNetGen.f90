@@ -43,14 +43,6 @@ avk = avkk
 prew = rewindprobs(1)
 prewloc = rewindprobs(2)
 
-! Set names for output files in the output_gen sub-directory:
-! namenet_net.txt
-! namenet_prop.txt
-! namenet_adj.txt
-
-name_network = "./output_gen/"//trim(namenet)//trim('_net.txt')
-prop_network = "./output_gen/"//trim(namenet)//trim('_prop.txt')
-adj_network = "./output_gen/"//trim(namenet)//trim('_adj.txt')
 
 ! initialize random number generator
 !OPEN(UNIT=50,FILE='./input/seed.in',STATUS='OLD')
@@ -73,8 +65,6 @@ an = float(n)
 
 ALLOCATE (a(n,n),degree(n))
 
-! open file to save network properties
-!OPEN(UNIT=15,FILE="prop.txt",STATUS='UNKNOWN')
 
 ! Generate the Modular Network
 
@@ -113,68 +103,54 @@ do while(modtot < n)
         IF(aux < pc1) THEN
             p = avk/float(modsize-1)
             CALL RANDOMMOD(ini,modtot)
-!            write(6,*) modsize,'         random '
 !            write(15,*) modsize,'random module   '
         ELSE IF(aux < pc2) THEN
             CALL SFMOD(ini,modtot)
-!            write(6,*) modsize,'         scalefree '
 !            write(15,*) modsize,'scalefree module'
         ELSE IF(aux < pc3) THEN
             CALL NESTEDMOD(ini,modtot)
-!            write(6,*) modsize,'         nested '
 !            write(15,*) modsize,'nested module   '
         ELSE IF(aux < pc41) THEN
             CALL BINESTEDMOD(ini,modtot)
-!            write(6,*) modsize,'         bipartite  nested      ','    sub-modules -->',nbi1,nbi2
 !            write(15,*) nbi1,'bipartite nested module 1'
 !            write(15,*) nbi2,'bipartite nested module 2'
         ELSE IF(aux < pc42) THEN
             CALL BIRANDMOD(ini,modtot)
-!            write(6,*) modsize,'         bipartite random       ','    sub-modules -->',nbi1,nbi2
 !            write(15,*) nbi1,'bipartite random module 1'
 !            write(15,*) nbi2,'bipartite random module 2'
         ELSE IF(aux < pc51) THEN
             CALL TRIMOD(ini,modtot,1)
-!            write(6,*) modsize,'         tri-trophic random     ','    sub-modules -->',ntri1,ntri2,ntri3
 !            write(15,*) ntri1,'tri-trophic random module 1'
 !            write(15,*) ntri2,'tri-trophic random module 2'
 !            write(15,*) ntri3,'tri-trophic random module 3'
         ELSE IF(aux < pc52) THEN
             CALL TRIMOD(ini,modtot,2)
-!            write(6,*) modsize,'         tri-trophic bipartite  ','    sub-modules -->',ntri1,ntri2,ntri3
 !            write(15,*) ntri1,'tri-trophic bipartite module 1'
 !            write(15,*) ntri2,'tri-trophic bipartite module 2'
 !            write(15,*) ntri3,'tri-trophic bipartite module 3'
         END IF
     ELSE IF(nettype == 1) THEN
         CALL RANDOMMOD(ini,modtot)
-!    write(6,*) modsize,'         random '
 !        write(15,*) modsize,'random module   '
     ELSE IF(nettype == 2) THEN
         CALL SFMOD(ini,modtot)
-!    write(6,*) modsize,'         scalefree '
 !        write(15,*) modsize,'scalefree module'
     ELSE IF(nettype == 3) THEN
         CALL NESTEDMOD(ini,modtot)
-!    write(6,*) modsize,'         nested '
 !        write(15,*) modsize,'nested module   '
     ELSE IF(nettype == 41) THEN
         CALL BINESTEDMOD(ini,modtot)
-!    write(6,*) modsize,'   bipartite nested','    sub-modules -->',nbi1,nbi2
 !        write(15,*) modsize,'bipartite module'
     ELSE IF(nettype == 42) THEN
         CALL BIRANDMOD(ini,modtot)
-!        write(6,*) modsize,'   bipartite random','    sub-modules -->',nbi1,nbi2
 !        write(15,*) modsize,'bipartite module'
     ELSE IF(nettype == 51) THEN
         CALL TRIMOD(ini,modtot,1)
-!        write(6,*) modsize,'         tri-trophic random,','    sub-modules -->',ntri1,ntri2,ntri3
 !        write(15,*) ntri1,'tri-trophic random module 1'
 !        write(15,*) ntri2,'tri-trophic random module 2'
 !        write(15,*) ntri3,'tri-trophic random module 3'
     ELSE IF(nettype == 52) THEN
         CALL TRIMOD(ini,modtot,2)
-!        write(6,*) modsize,'         tri-trophic bipartite,','    sub-modules -->',ntri1,ntri2,ntri3
 !        write(15,*) ntri1,'tri-trophic bipartite module 1'
 !        write(15,*) ntri2,'tri-trophic bipartite module 2'
 !        write(15,*) ntri3,'tri-trophic bipartite module 3'
@@ -251,15 +227,9 @@ end do
 
 
 
-!write(6,*) '----------------------------------------- '
 ! average connectivity
 icon = SUM(a)
-!write(6,*) 'average degree =',icon/an
-!write(6,*) 'average module size =',an/float(modcount)
-
 call clusters(a,n,maxsize,nclusters)
-!write(6,*) 'number of components =',nclusters
-!write(6,*) 'size of largest component =',maxsize
 
 !write(15,*) ' '
 !write(15,*) 'average degree =',icon/an

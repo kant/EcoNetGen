@@ -95,8 +95,7 @@ INTEGER, ALLOCATABLE :: maxsizev(:),nclustersv(:),mnewv(:),hiddenv(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
 REAL, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
-CHARACTER*4 node1,node2
-CHARACTER*60 name_network,prop_network,out_file
+
 
 icrit = crit(1)
 neigh_crit = crit(2)
@@ -191,10 +190,14 @@ imods = n_modules(1)
 
 ALLOCATE(module_status(imods),modsize(imods))
 modsize = 0
+
 !REWIND(UNIT=15)
+
 do i=1,imods
     modsize(i) = module_sizes(i)
 end do
+
+
 !CLOSE(15)
 
 
@@ -258,8 +261,8 @@ write(10,*)
 
 ALLOCATE (maxsizev(nr),nclustersv(nr),mnewv(nr),hiddenv(nr))
 
-OPEN(UNIT=27,FILE='degree-correlation-key.dat',STATUS='UNKNOWN')
-OPEN(UNIT=28,FILE='degree-correlation-added.dat',STATUS='UNKNOWN')
+OPEN(UNIT=27,FILE='./dcorr_key.txt',STATUS='UNKNOWN')
+OPEN(UNIT=28,FILE='./dcorr_added.txt',STATUS='UNKNOWN')
 
 do while (m <= mf)
     avmaxcluster = 0.0    ! average value of max component size
@@ -457,6 +460,8 @@ do while (m <= mf)
 
     CLOSE(27)
     CLOSE(28)
+
+
     ! normalize average values
     avmaxcluster = avmaxcluster/anr
     avnumbcluster = avnumbcluster/anr
@@ -498,10 +503,10 @@ DEALLOCATE(a,a_aux,idx,modsize,module_status)
 
 
 ! save info on log file
-!OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='OLD', POSITION='APPEND')
-!WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
-!CLOSE(20)
-!901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)
+OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='OLD', POSITION='APPEND')
+WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
+CLOSE(20)
+901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)
 
 END SUBROUTINE subsampling
 
