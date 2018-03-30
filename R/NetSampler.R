@@ -40,25 +40,38 @@
 #' @export
 NetSampler <-
   function(network_in,
+           module_sizes = NULL,
            crit = c(1,0),
            key_nodes = c(10, 50, 10, 1000),
            anfn = 0.5,
            numb_hidden = 0,
-           hidden_modules = c(1,5,6,0,0,0,0,0,0,0)) {
+           hidden_modules = c(1,5,6,0,0,0,0,0,0,0)
+           ) {
 
-    net <- as.integer(as.matrix(as_adjacency_matrix(network_in)))
+    ## Convert igraph to integer vector
+    net <- as.integer(as.matrix(igraph::as_adjacency_matrix(network_in)))
+
+    ## number of nodes
     n <- sqrt(length(net))
+
+    if(is.null(module_sizes)){
+      community <- igraph::cluster_edge_betweenness(igraph::as.undirected(network))
+      module_sizes <- vapply(igraph::groups(community), length, integer(1))
+    }
+
 
     res <- .Fortran(
       "subsampling",
-      as.intger(net),
+      as.integer(net),
       out = integer(),
       as.integer(crit),
       as.integer(key_nodes),
       as.single(anfn),
       as.integer(numb_hidden),
-      as.integer(hidden_modules)
-      as.integer(n)
+      as.integer(hidden_modules),
+      as.integer(n),
+      as.integer(module_sizes),
+      as.integer(length(module_sizes))
     )
 
     res$out

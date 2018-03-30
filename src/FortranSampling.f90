@@ -80,11 +80,9 @@ CHARACTER*60, SAVE :: name_links,name_nodes,name_sampled
 END MODULE globalvar
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, size_n)
+SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, size_n, module_sizes, n_modules)
 USE globalvar
-integer net_in(*)
-integer net_out(*)
-integer size_n(*)
+integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
 
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN), DIMENSION(4) :: key_nodes
@@ -181,23 +179,23 @@ ALLOCATE (key_prob(n),prob_aux(n))
 key_prob = 0.0
 
 ! read modules information
-OPEN(UNIT=15,FILE=prop_network,STATUS='OLD')
-imods = 0
-k = 0
-do while (k == 0)
-    read(15,*,iostat=k) i
-    imods = imods + 1
-end do
-imods = imods - 1
+!OPEN(UNIT=15,FILE=prop_network,STATUS='OLD')
+!imods = 0
+!k = 0
+!do while (k == 0)
+!    read(15,*,iostat=k) i
+!    imods = imods + 1
+!end do
+imods = n_modules(1)
 
 
 ALLOCATE(module_status(imods),modsize(imods))
 modsize = 0
-REWIND(UNIT=15)
+!REWIND(UNIT=15)
 do i=1,imods
-    read(15,*) modsize(i)
+    modsize(i) = module_sizes(i)
 end do
-CLOSE(15)
+!CLOSE(15)
 
 
 module_status = 0
