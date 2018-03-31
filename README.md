@@ -36,7 +36,7 @@ network <- netgen(n_modav = c(250, 20),
                   mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
 #> 
 #> module count = 4 
-#> average degree = 7.948 
+#> average degree = 8.764 
 #> average module size = 62.5 
 #> number of components = 1 
 #> size of largest component = 250
@@ -48,7 +48,7 @@ We can plot the resulting `igraph` as an adjacency matrix:
 adj_plot(network)
 ```
 
-![](README-unnamed-chunk-2-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-2-1.png)<!-- -->
 
 Network `igraph` objects can also be plotted using the standard `igraph`
 plotting routines, for example:
@@ -68,7 +68,7 @@ plot(network, vertex.size= 0, vertex.label=NA,
      edge.curved =TRUE, layout = layout_with_kk)
 ```
 
-![](README-unnamed-chunk-3-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-3-1.png)<!-- -->
 
 And we can compute common statistics from igraph as well. Here we
 confirm that clustering by “edge betweeness” gives us the expected
@@ -86,12 +86,12 @@ We can check the size of each module as well:
 module_sizes <- sapply(groups(community), length)
 module_sizes
 #>  1  2  3  4 
-#> 62 65 61 62
+#> 59 55 58 78
 mean(module_sizes)
 #> [1] 62.5
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 7.968
+#> [1] 8.776
 ```
