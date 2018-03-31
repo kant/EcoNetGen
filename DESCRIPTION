@@ -1,7 +1,7 @@
 Package: EcoNetGen
 Version: 0.1.0
 Title: Simulate and Sample from Ecological Interaction Networks
-Description: Generate a wide range of random networks given expected degree, modularity,
+Description: Generate a wide range of random networks given expected degree, 'modularity',
              and structure.  Simulations and sampling routines are implemented in FORTRAN,
              providing efficient generation times even for large networks. Basic visualization
              methods also included.  
