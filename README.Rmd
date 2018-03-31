@@ -1,5 +1,6 @@
 ---
 output: github_document
+title: EcoNetGen
 ---
 
 [![Travis-CI Build Status](https://travis-ci.org/cboettig/EcoNetGen.svg?branch=master)](https://travis-ci.org/cboettig/EcoNetGen)
@@ -18,7 +19,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# EcoNetGen
 
 
 ## Installation
