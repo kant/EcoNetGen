@@ -2,7 +2,7 @@
 [![Travis-CI Build
 Status](https://travis-ci.org/cboettig/EcoNetGen.svg?branch=master)](https://travis-ci.org/cboettig/EcoNetGen)
 [![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/cboettig/EcoNetGen?branch=master&svg=true)](https://ci.appveyor.com/project/cboettig/NetGen)
+Status](https://ci.appveyor.com/api/projects/status/github/cboettig/EcoNetGen?branch=master&svg=true)](https://ci.appveyor.com/project/cboettig/EcoNetGen)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/cboettig/EcoNetGen/master.svg)](https://codecov.io/github/cboettig/EcoNetGen?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/EcoNetGen)](https://cran.r-project.org/package=EcoNetGen)
@@ -35,9 +35,9 @@ network <- netgen(n_modav = c(250, 20),
                   net_rewire = c(0.07,0.2),
                   mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
 #> 
-#> module count = 4 
-#> average degree = 8.984 
-#> average module size = 62.5 
+#> module count = 3 
+#> average degree = 9.932 
+#> average module size = 83.3333333333333 
 #> number of components = 1 
 #> size of largest component = 250
 ```
@@ -77,7 +77,7 @@ number of modules:
 ``` r
 community <- cluster_edge_betweenness(as.undirected(network))
 length(groups(community))
-#> [1] 4
+#> [1] 3
 ```
 
 We can check the size of each module as well:
@@ -85,13 +85,13 @@ We can check the size of each module as well:
 ``` r
 module_sizes <- sapply(groups(community), length)
 module_sizes
-#>  1  2  3  4 
-#> 60 84 52 54
+#>  1  2  3 
+#> 82 72 96
 mean(module_sizes)
-#> [1] 62.5
+#> [1] 83.33333
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 9.016
+#> [1] 9.952
 ```
