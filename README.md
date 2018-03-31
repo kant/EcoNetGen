@@ -1,24 +1,24 @@
 
 [![Travis-CI Build
-Status](https://travis-ci.org/cboettig/NetGen.svg?branch=master)](https://travis-ci.org/cboettig/NetGen)
+Status](https://travis-ci.org/cboettig/EcoNetGen.svg?branch=master)](https://travis-ci.org/cboettig/EcoNetGen)
 [![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/cboettig/NetGen?branch=master&svg=true)](https://ci.appveyor.com/project/cboettig/NetGen)
+Status](https://ci.appveyor.com/api/projects/status/github/cboettig/EcoNetGen?branch=master&svg=true)](https://ci.appveyor.com/project/cboettig/NetGen)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/cboettig/NetGen/master.svg)](https://codecov.io/github/cboettig/NetGen?branch=master)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/NetGen)](https://cran.r-project.org/package=NetGen)
+Status](https://img.shields.io/codecov/c/github/cboettig/EcoNetGen/master.svg)](https://codecov.io/github/cboettig/EcoNetGen?branch=master)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/EcoNetGen)](https://cran.r-project.org/package=EcoNetGen)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# NetGen
+# EcoNetGen
 
 ## Installation
 
-You can install NetGen from github with:
+You can install EcoNetGen from github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("cboettig/NetGen")
+devtools::install_github("cboettig/EcoNetGen")
 ```
 
 ## Example
@@ -27,7 +27,7 @@ This is a basic example which generates a network. See `?netgen` for
 documentation describing the parameter arguments.
 
 ``` r
-library(NetGen)
+library(EcoNetGen)
 network <- netgen(n_modav = c(250, 20), 
                   cutoffs = c(50, 5), 
                   net_type = 41, 
@@ -36,7 +36,7 @@ network <- netgen(n_modav = c(250, 20),
                   mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
 #> 
 #> module count = 4 
-#> average degree = 8.716 
+#> average degree = 8.984 
 #> average module size = 62.5 
 #> number of components = 1 
 #> size of largest component = 250
@@ -86,12 +86,12 @@ We can check the size of each module as well:
 module_sizes <- sapply(groups(community), length)
 module_sizes
 #>  1  2  3  4 
-#> 60 71 55 64
+#> 60 84 52 54
 mean(module_sizes)
 #> [1] 62.5
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 8.744
+#> [1] 9.016
 ```
