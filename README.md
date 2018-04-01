@@ -8,7 +8,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/cboettig/EcoNetGen?br
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/cboettig/EcoNetGen/master.svg)](https://codecov.io/github/cboettig/EcoNetGen?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/EcoNetGen)](https://cran.r-project.org/package=EcoNetGen)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -35,9 +35,9 @@ network <- netgen(n_modav = c(250, 20),
                   net_rewire = c(0.07,0.2),
                   mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
 #> 
-#> module count = 4 
-#> average degree = 8.764 
-#> average module size = 62.5 
+#> module count = 3 
+#> average degree = 8.116 
+#> average module size = 83.3333333333333 
 #> number of components = 1 
 #> size of largest component = 250
 ```
@@ -77,7 +77,7 @@ number of modules:
 ``` r
 community <- cluster_edge_betweenness(as.undirected(network))
 length(groups(community))
-#> [1] 4
+#> [1] 6
 ```
 
 We can check the size of each module as well:
@@ -85,13 +85,13 @@ We can check the size of each module as well:
 ``` r
 module_sizes <- sapply(groups(community), length)
 module_sizes
-#>  1  2  3  4 
-#> 59 55 58 78
+#>  1  2  3  4  5  6 
+#> 59  3 95  2 89  2
 mean(module_sizes)
-#> [1] 62.5
+#> [1] 41.66667
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 8.776
+#> [1] 8.128
 ```
