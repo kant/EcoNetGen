@@ -15,6 +15,7 @@ quicktest.R
 ^codecov\.yml$
 ^ignore$
 ^.zenodo\.json$
+^README_cache$
 
 ^appveyor\.yml$
 ^cran-comments\.md$
