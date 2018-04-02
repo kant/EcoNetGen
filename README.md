@@ -35,9 +35,9 @@ network <- netgen(n_modav = c(250, 20),
                   net_rewire = c(0.07,0.2),
                   mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
 #> 
-#> module count = 3 
-#> average degree = 8.116 
-#> average module size = 83.3333333333333 
+#> module count = 4 
+#> average degree = 8.736 
+#> average module size = 62.5 
 #> number of components = 1 
 #> size of largest component = 250
 ```
@@ -77,7 +77,7 @@ number of modules:
 ``` r
 community <- cluster_edge_betweenness(as.undirected(network))
 length(groups(community))
-#> [1] 6
+#> [1] 4
 ```
 
 We can check the size of each module as well:
@@ -85,13 +85,13 @@ We can check the size of each module as well:
 ``` r
 module_sizes <- sapply(groups(community), length)
 module_sizes
-#>  1  2  3  4  5  6 
-#> 59  3 95  2 89  2
+#>  1  2  3  4 
+#> 53 52 63 82
 mean(module_sizes)
-#> [1] 41.66667
+#> [1] 62.5
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 8.128
+#> [1] 8.752
 ```
