@@ -9,6 +9,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/cboettig/EcoNetGen?br
 Status](https://img.shields.io/codecov/c/github/cboettig/EcoNetGen/master.svg)](https://codecov.io/github/cboettig/EcoNetGen?branch=master)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/EcoNetGen)](https://cran.r-project.org/package=EcoNetGen)
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![DOI](https://zenodo.org/badge/116610054.svg)](https://zenodo.org/badge/latestdoi/116610054)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
