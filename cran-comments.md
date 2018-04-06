@@ -1,7 +1,9 @@
 Dear CRAN Maintainers,
 
 We are pleased to provide an intial Release of NetGen for consideration for the CRAN
-repository. 
+repository. This release now includes FORTRAN in single quotes and includes a reference
+to the preprint on arXiv where a description of the algorithms implemented here are
+described, as requested.  
 
 ## Test environments
 

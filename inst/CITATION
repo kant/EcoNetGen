@@ -1,0 +1,19 @@
+bibentry(bibtype = "Article",
+         header = "To cite EcoNetGen in publications, please use:",
+         title = "Revealing biases in the sampling of ecological interaction networks",
+         journal = "arXiv",
+         author = c(
+             person(c("Marcus", "A. M."), "de Aguiar"),
+             person(c("Erica", "A."), "Newman"),
+             person(c("Mathias", "M."), "Pires"),
+             person(c("Justin",  "D."), "Yeakel"),
+             person(c("David", "H."), "Hembry"),
+             person("Laura", "Burkle"),
+             person("Dominique", "Gravel"),
+             person(c("Paulo", "R."), "Guimaraes Jr,"),
+             person("Jimmy", "O'Donnell"),
+             person("Timothee", "Poisot"),
+             person("Marie-Josee", "Fortin")
+             ),
+         year = 2017,
+         arxiv = "11708.01242")
