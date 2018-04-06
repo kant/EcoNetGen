@@ -405,7 +405,7 @@ do while (m <= mf)
 
             if( j == 1) then
               net_out(idx(row(k)) + (idx(col(k))-1) * mnew) = 1
-              net_out(idx(col(k)) + (idx(row(k))-1) * mnew) = 1
+!              net_out(idx(col(k)) + (idx(row(k))-1) * mnew) = 1 ! not mapped, need to get symmetric position
 
               n_sampled(1) = mnew
             end if
