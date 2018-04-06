@@ -5,12 +5,12 @@
 
 void F77_SUB(subnetgen)(int *, int *, int *, int *,float *, float *, float *, int *);
 void F77_SUB(clusters)(int *, int *, int *, int *);
-void F77_SUB(subsampling)(int *, int *, int *, int *, float *, int *, int *, int *, int *, int *);
+void F77_SUB(subsampling)(int *, int *, int *, int *, float *, int *, int *, int *, int *, int *, int *, int *, int *);
 
 static R_FortranMethodDef R_FortranDef[] = {
   {"subnetgen",  (DL_FUNC) &F77_SUB(subnetgen),  8, NULL},
   {"clusters",  (DL_FUNC) &F77_SUB(clusters),  4, NULL},
-  {"subsampling",  (DL_FUNC) &F77_SUB(subsampling),  10, NULL},
+  {"subsampling",  (DL_FUNC) &F77_SUB(subsampling),  13, NULL},
 
   {NULL, NULL, 0, NULL}
 };

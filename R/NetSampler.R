@@ -60,12 +60,12 @@ netsample <-
     net <- as.integer(as.matrix(igraph::as_adjacency_matrix(network_in)))
 
     ## number of nodes
-    n <- sqrt(length(net))
+    n <- as.integer(sqrt(length(net)))
 
     res <- .Fortran(
       "subsampling",
       as.integer(net),
-      out = integer(1L),
+      out = integer(n),
       as.integer(crit),
       as.integer(key_nodes),
       as.single(anfn),
@@ -73,11 +73,16 @@ netsample <-
       as.integer(hidden_modules),
       as.integer(n),
       as.integer(module_sizes),
-      as.integer(length(module_sizes))
+      as.integer(length(module_sizes)),
+      n_sampled = as.integer(1L),
+      nodes_sampled = integer(n),
+      edges_sampled = integer(n^2)
     )
 
-    res$out
-
+    #M <- res$out[1 : res$n_sampled]
+    #M <- matrix(M, sqrt(length(M)))
+    #igraph::graph_from_adjacency_matrix(M)
+    res
   }
 
 

@@ -80,9 +80,10 @@ CHARACTER*60, SAVE :: name_links,name_nodes,name_sampled
 END MODULE globalvar
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, size_n, module_sizes, n_modules)
+SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, &
+                       size_n, module_sizes, n_modules, n_sampled, nodes_sampled, edges_sampled)
 USE globalvar
-integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
+integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*), n_sampled(*), nodes_sampled(*), edges_sampled(*)
 
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN), DIMENSION(4) :: key_nodes
@@ -112,10 +113,10 @@ nfn = int(anfn)
 ! Set names for input and output files in sub-directories
 ! output_gen and output_sampled
 !
-! name_net_prop.txt  --  input properties file
-! name_net_out_name_links.txt -- links with colors
-! name_net_out_name_nodes.txt  --  nodes with colors
-! name_net_out_name_sampled.txt  --  sampled network
+! name_prop.txt  --  input properties file
+! name_links.txt -- links with colors
+! name_nodes.txt  --  nodes with colors
+! name_sampled.txt  --  sampled network
 
 
 ! read network
@@ -138,7 +139,7 @@ end if
 CALL init_random_seed()
 
 
-REWIND(UNIT=10)
+!REWIND(UNIT=10)
 k = 0
 a = 0
 
@@ -252,11 +253,11 @@ print *,
 
 ! loop over m from mi to mf at steps of mstep
 m = mi
-OPEN(UNIT=10,FILE='out_file.txt',STATUS='unknown')
+!OPEN(UNIT=10,FILE='out_file.txt',STATUS='unknown')
 
-write(10,*) '   m       size    rms      larg-comp rms      rel-larg-comp rms    #-comps rms     hidden-nodes rms'
-write(10,*) ' -------------------------------------------------------------------------------------------------------'
-write(10,*)
+!write(10,*) '   m       size    rms      larg-comp rms      rel-larg-comp rms    #-comps rms     hidden-nodes rms'
+!write(10,*) ' -------------------------------------------------------------------------------------------------------'
+!write(10,*)
 
 
 ALLOCATE (maxsizev(nr),nclustersv(nr),mnewv(nr),hiddenv(nr))
@@ -401,6 +402,14 @@ do while (m <= mf)
         do k=1,linkc
             jj(idx(row(k)),idx(col(k))) = 1
             jj(idx(col(k)),idx(row(k))) = 1
+
+            if( j == 1) then
+              net_out(idx(row(k)) + (idx(col(k))-1) * mnew) = 1
+              net_out(idx(col(k)) + (idx(row(k))-1) * mnew) = 1
+
+              n_sampled(1) = mnew
+            end if
+
         end do
 
         ALLOCATE(degsamp(mnew))
@@ -443,19 +452,40 @@ do while (m <= mf)
         ! add results of each realization to calculate averages
         avmaxcluster = avmaxcluster + float(maxsize)
         avnumbcluster = avnumbcluster + float(nclusters)
-    amtot = amtot + float(mnew)
+        amtot = amtot + float(mnew)
         avhiddentot = avhiddentot + float(hidden)
 
-        ! save info to calcule variance
+        ! save info to calculate variance
         maxsizev(j) = maxsize
         nclustersv(j) = nclusters
         mnewv(j) = mnew
         hiddenv(j) = hidden
 
-    ! save the subnetwork obtained in the first realization as an example
-    IF(j == 1) CALL SAVE_SUB_NET
+        ! save the subnetwork obtained in the first realization as an example
+        if(j == 1) then
 
-    DEALLOCATE (jj)
+          CALL SAVE_SUB_NET
+
+          ! save node list color as idx (ordered list of nodes, 1 = sampled, 0 = unsampled)
+          ! save link list color, a_aux (ordered list edges, 1 = sampled (red), 0 unsampled blue)
+
+
+
+
+          do iw=1,n
+!            nodes_sampled(iw) = idx(iw)
+            do jw=iw+1,n
+!                edges_sampled((iw-1)*n + jw) = a_aux(iw,jw)
+            end do
+          end do
+
+
+
+
+
+        end if
+        DEALLOCATE (jj)
+
     end do
 
     CLOSE(27)
@@ -487,12 +517,12 @@ do while (m <= mf)
 
     ! print results on screen and file
     print *, m,amtot,varm,avmaxcluster,varmax,avmaxcluster/amtot,varquo,avnumbcluster,varnumb,avhiddentot,varhidden
-    write(10,112) m,amtot,varm,avmaxcluster,varmax,avmaxcluster/amtot,varquo,avnumbcluster,varnumb,avhiddentot,varhidden
+!    write(10,112) m,amtot,varm,avmaxcluster,varmax,avmaxcluster/amtot,varquo,avnumbcluster,varnumb,avhiddentot,varhidden
     m = m + mstep
   DEALLOCATE (row,col)
 end do
 
-close(10)
+!close(10)
 
 
 DEALLOCATE(v,vk,prob_aux,key_prob,maxsizev,nclustersv,mnewv,hiddenv)
@@ -503,9 +533,9 @@ DEALLOCATE(a,a_aux,idx,modsize,module_status)
 
 
 ! save info on log file
-OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='UNKNOWN')
-WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
-CLOSE(20)
+!OPEN(UNIT=20,FILE='./log_sampled.txt',STATUS='UNKNOWN')
+!WRITE(20,901) net_name,out_name,icrit,neigh_crit,anfn,nr,numb_hidden
+!CLOSE(20)
 901 FORMAT(A15,2x,A15,2x,i4,8x,i4,10x,F6.2,8x,i7,8x,i3)
 
 END SUBROUTINE subsampling
@@ -738,11 +768,11 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-OPEN(UNIT=20,FILE='./lognormal.txt',STATUS='UNKNOWN')
-do i=1,np
-write(20,*) x(i),rho(i),rhoc(i)
-end do
-close(20)
+!OPEN(UNIT=20,FILE='./lognormal.txt',STATUS='UNKNOWN')
+!do i=1,np
+!write(20,*) x(i),rho(i),rhoc(i)
+!end do
+!close(20)
 END SUBROUTINE lognormal
 
 
@@ -774,11 +804,11 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-OPEN(UNIT=20,FILE='./logfisher.txt',STATUS='UNKNOWN')
-do i=1,np
-write(20,*) x(i),rho(i),rhoc(i)
-end do
-close(20)
+!OPEN(UNIT=20,FILE='./logfisher.txt',STATUS='UNKNOWN')
+!do i=1,np
+!write(20,*) x(i),rho(i),rhoc(i)
+!end do
+!close(20)
 END SUBROUTINE fisherlog
 
 
