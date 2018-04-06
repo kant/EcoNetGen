@@ -23,7 +23,7 @@
 #' @importFrom igraph graph.data.frame graph_from_adjacency_matrix
 #' @importFrom utils read.table
 #' @return an `igraph` object
-#' @useDynLib NetGen, .registration = TRUE
+#' @useDynLib EcoNetGen, .registration = TRUE
 #' @export
 netgen <-
   function(

@@ -1,4 +1,4 @@
 library(testthat)
-library(NetGen)
+library(EcoNetGen)
 
-test_check("NetGen")
+test_check("EcoNetGen")

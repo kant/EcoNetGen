@@ -783,3 +783,22 @@ END SUBROUTINE fisherlog
 
 
 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SUBROUTINE NUMBSTR(ID,NUMBER,STR)
+CHARACTER*(*) STR
+INTEGER ID,NUMBER
+CHARACTER*1 B
+INTEGER IA0,N,I,IT
+IA0 = ICHAR('0')
+N = NUMBER
+DO I=1,ID
+   J = ID + 1 - I
+   IT = MOD(N,10)
+   B = CHAR(IA0 + IT)
+   STR(J:J) = B
+   N = (N - IT)/10
+END DO
+RETURN
+END
