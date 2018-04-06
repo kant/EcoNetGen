@@ -5,7 +5,7 @@ Description: Generate a wide range of random networks given expected degree, 'mo
              and structure.  Simulations and sampling routines are implemented in 'FORTRAN',
              providing efficient generation times even for large networks. Basic visualization
              methods also included.  Algorithms implemented here are described in
-             de Aguiar et al (2017) <arXiv:1708.01242>.
+             'de Aguiar' 'et al.' (2017) <arXiv:1708.01242>.
 Authors@R: c(person("Marcus", "de Aguiar", 
                     role = c("aut", "cph"),
                     comment = c(ORCID = "0000-0003-1379-7568")),

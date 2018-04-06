@@ -5,6 +5,10 @@ repository. This release now includes FORTRAN in single quotes and includes a re
 to the preprint on arXiv where a description of the algorithms implemented here are
 described, as requested.  
 
+Please note that introducing an arXiv identifier in the manner directed by CRAN triggers a 
+NOTE on the automated CRAN checks.  
+
+
 ## Test environments
 
 * local OS X install, R 3.4.4
@@ -13,7 +17,7 @@ described, as requested.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 note
 
 * This is a new release.
 
