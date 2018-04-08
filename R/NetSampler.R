@@ -65,7 +65,7 @@ netsample <-
     res <- .Fortran(
       "subsampling",
       as.integer(net),
-      out = integer(n),
+      out = integer(n^2),
       as.integer(crit),
       as.integer(key_nodes),
       as.single(anfn),
@@ -73,8 +73,7 @@ netsample <-
       as.integer(hidden_modules),
       as.integer(n),
       as.integer(module_sizes),
-      as.integer(length(module_sizes)),
-      n_sampled = as.integer(1L)
+      as.integer(length(module_sizes))
   #    nodes_sampled = integer(n),
   #    edges_sampled = integer(n^2)
     )

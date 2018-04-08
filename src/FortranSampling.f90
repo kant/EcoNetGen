@@ -111,9 +111,9 @@ nfn = int(anfn)
 
 !name_network = "./output_gen/"//trim(net_name)//"_net.txt"
 !prop_network = "./output_gen/"//trim(net_name)//"_prop.txt"
-!out_file = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//".txt"
-!name_links = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//"_links.txt"
-!name_nodes = "./output_sampled/"//trim(net_name)//"_"//trim(out_name)//"_nodes.txt"
+!out_file = ""//trim(net_name)//"_"//trim(out_name)//".txt"
+!name_links = ""//trim(net_name)//"_"//trim(out_name)//"_links.txt"
+!name_nodes = ""//trim(net_name)//"_"//trim(out_name)//"_nodes.txt"
 
 
 ! read network
@@ -439,7 +439,7 @@ ALLOCATE (prob(n))
 
 prob = 0.0
 IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
-    OPEN(UNIT=30,FILE='./output_sampled/abund.txt',STATUS='UNKNOWN')
+    OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
     IF(icrit > 0) THEN
         np = 10000
         ALLOCATE (x(0:np),rhoc(0:np),prob_aux(0:np))
@@ -489,7 +489,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(30)
 
     ELSE IF(icrit == 3) THEN     ! exponential abundance distribution
-        OPEN(UNIT=30,FILE='./output_sampled/abund.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
         print *, 'Sampling key nodes according to exponential abundance distribution'
         do im=1,imods
             if(im == 1) then
@@ -517,7 +517,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(30)
 
     ELSE IF(icrit == 4) THEN                        ! sample according to degree
-        OPEN(UNIT=20,FILE='./output_sampled/degree.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=20,FILE='degree.txt',STATUS='UNKNOWN')
         print *, 'Sampling key nodes according to degree'
         prob = sum(a,DIM=1)
         DO im=1,imods
@@ -542,7 +542,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
     CLOSE(20)
 
     ELSE IF(icrit == 5) THEN                        ! sample according to module
-        OPEN(UNIT=20,FILE='./output_sampled/module.txt',STATUS='UNKNOWN')
+        OPEN(UNIT=20,FILE='module.txt',STATUS='UNKNOWN')
         print *, 'Sampling key nodes according to module probabilities'
         do im=1,imods
             if(im == 1) then
@@ -643,7 +643,7 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-!OPEN(UNIT=20,FILE='./output_sampled/lognormal.txt',STATUS='UNKNOWN')
+!OPEN(UNIT=20,FILE='lognormal.txt',STATUS='UNKNOWN')
 !do i=1,np
 !write(20,*) x(i),rho(i),rhoc(i)
 !end do
@@ -679,7 +679,7 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-!OPEN(UNIT=20,FILE='./output_sampled/logfisher.txt',STATUS='UNKNOWN')
+!OPEN(UNIT=20,FILE='logfisher.txt',STATUS='UNKNOWN')
 !do i=1,np
 !write(20,*) x(i),rho(i),rhoc(i)
 !end do
