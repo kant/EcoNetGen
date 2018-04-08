@@ -64,7 +64,7 @@ netsample <-
 
     res <- .Fortran(
       "subsampling",
-      as.integer(net),
+      input = as.integer(net),
       out = integer(n^2),
       as.integer(crit),
       as.integer(key_nodes),
@@ -73,14 +73,21 @@ netsample <-
       as.integer(hidden_modules),
       as.integer(n),
       as.integer(module_sizes),
-      as.integer(length(module_sizes))
-  #    nodes_sampled = integer(n),
-  #    edges_sampled = integer(n^2)
+      as.integer(length(module_sizes)),
+      nodes_sampled = integer(n),
+      edges_sampled = integer(n^2)
     )
 
     #M <- res$out[1 : res$n_sampled]
     #M <- matrix(M, sqrt(length(M)))
-    #igraph::graph_from_adjacency_matrix(M)
+    #s <- igraph::graph_from_adjacency_matrix(M)
+
+    #
+    res$nodes_sampled
+
+    # 2 = sampled, 1 = not sampled, 0 = no link
+    res$edges_sampled
+
     res
   }
 

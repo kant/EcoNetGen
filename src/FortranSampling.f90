@@ -76,9 +76,10 @@ END MODULE globalvar
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, &
-                       size_n, module_sizes, n_modules)
+                       size_n, module_sizes, n_modules, sampled_nodes, sampled_edges)
 USE globalvar
 integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
+integer sampled_nodes(*), sampled_edges(*)
 !CHARACTER*40, INTENT(IN) :: net_name
 !CHARACTER*40, INTENT(IN) :: out_name
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
@@ -91,7 +92,7 @@ INTEGER, ALLOCATABLE :: vk(:),row(:),col(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
 REAL, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
-CHARACTER*4 node1,node2
+!CHARACTER*4 node1,node2
 !CHARACTER*60 name_network,prop_network,out_file
 
 icrit = crit(1)
@@ -411,10 +412,10 @@ CALL SAVE_SUB_NET
     end do
   end do
 
-!sampled_nodes(1:n) = idx(1:n)
+sampled_nodes(1:n) = idx(1:n)
   do iw=1,n
     do jw=1,n
-!      sampled_edges((iw-1)*n + jw) = a_aux(iw,jw)
+      sampled_edges((iw-1)*n + jw) = a_aux(iw,jw)
     end do
   end do
 DEALLOCATE (jj)
@@ -436,8 +437,8 @@ DEALLOCATE (row,col)
 DEALLOCATE(v,vk,prob_aux,key_prob)
 DEALLOCATE(a,a_aux,idx,modsize,module_status)
 
-110 FORMAT(A4,1x,A4)
-112 FORMAT(3(i10,10x),F10.4,10x,2(i10,10x))
+!110 FORMAT(A4,1x,A4)
+!112 FORMAT(3(i10,10x),F10.4,10x,2(i10,10x))
 
 END SUBROUTINE subsampling
 
