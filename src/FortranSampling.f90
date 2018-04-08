@@ -404,6 +404,19 @@ end do
 
 ! save the subnetwork
 CALL SAVE_SUB_NET
+
+  do iw=1,mnew
+    do jw=1,mnew
+      net_out((iw-1)*n + jw) = jj(iw,jw)
+    end do
+  end do
+
+!sampled_nodes(1:n) = idx(1:n)
+  do iw=1,n
+    do jw=1,n
+!      sampled_edges((iw-1)*n + jw) = a_aux(iw,jw)
+    end do
+  end do
 DEALLOCATE (jj)
 CLOSE(27)
 CLOSE(28)
