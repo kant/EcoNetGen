@@ -16,6 +16,6 @@ quicktest.R
 ^ignore$
 ^.zenodo\.json$
 ^README_cache$
-paper/
+^paper$
 ^appveyor\.yml$
 ^cran-comments\.md$
