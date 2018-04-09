@@ -80,8 +80,6 @@ SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_mod
 USE globalvar
 integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
 integer sampled_nodes(*), sampled_edges(*)
-!CHARACTER*40, INTENT(IN) :: net_name
-!CHARACTER*40, INTENT(IN) :: out_name
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN) :: key_nodes
 INTEGER, INTENT(IN) :: numb_hidden
@@ -92,44 +90,15 @@ INTEGER, ALLOCATABLE :: vk(:),row(:),col(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
 REAL, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
-!CHARACTER*4 node1,node2
-!CHARACTER*60 name_network,prop_network,out_file
+
 
 icrit = crit(1)
 neigh_crit = crit(2)
-
 m = key_nodes
 nfn = int(anfn)
 
-! Set names for input and output files in sub-directories
-! output_gen and output_sampled
-!
-! name_net_net.txt  --  input network file
-! name_net_prop.txt  --  input properties file
-! name_net_out_name.txt  -- output file with sampled data
-! name_net_out_name_links.txt -- links with colors
-! name_net_out_name_nodes.txt  --  nodes with colors
-
-!name_network = "./output_gen/"//trim(net_name)//"_net.txt"
-!prop_network = "./output_gen/"//trim(net_name)//"_prop.txt"
-!out_file = ""//trim(net_name)//"_"//trim(out_name)//".txt"
-!name_links = ""//trim(net_name)//"_"//trim(out_name)//"_links.txt"
-!name_nodes = ""//trim(net_name)//"_"//trim(out_name)//"_nodes.txt"
-
-
-! read network
-!OPEN(UNIT=10,FILE=name_network,STATUS='old')
-
 k = 0
 n = size_n(1)
-
-!n = 0
-! find network size
-!do while (k == 0)
-!	read(10,*,iostat=k) i,j
-!	if(i > n) n = i
-!	if(j > n) n = j
-!end do
 
 ALLOCATE (a_aux(n,n))
 ALLOCATE (v(n),vk(n))
@@ -141,11 +110,8 @@ if(neigh_crit == 1) then
     w = 0.0
 end if
 
-
 CALL init_random_seed()
 
-
-!REWIND(UNIT=10)
 k = 0
 a = 0
 !do while (k == 0)
@@ -184,26 +150,12 @@ key_prob = 0.0
 imods = n_modules(1)
 
 
-! read modules information
-!OPEN(UNIT=15,FILE=prop_network,STATUS='OLD')
-!imods = 0
-!k = 0
-!do while (k == 0)
-!    read(15,*,iostat=k) i
-!    imods = imods + 1
-!end do
-!imods = imods - 1
-
 
 ALLOCATE(module_status(imods),modsize(imods))
 modsize = 0
-!REWIND(UNIT=15)
 do i=1,imods
   modsize(i) = module_sizes(i)
-    !read(15,*) modsize(i)
 end do
-!CLOSE(15)
-
 
 module_status = 0
 if (numb_hidden /= 0) then
@@ -223,7 +175,6 @@ av_degree = float(icon)/float(n)
 
 ! find connected clusters of the initial network
 call clusters(a,n,maxsize,nclusters)
-
 
 ! print basic info on screen
 !print *,
@@ -246,12 +197,6 @@ CALL SAMPLING_CRITERION(icrit)
 ! The output of this subroutine is the vector "key_prob" containing the
 ! cummulative probability that nodes will be sampled.
 ! For random sampling key_prob(i) = i/n (if no modules are skipped)
-
-
-!print *,
-!print *, '   m       size    rms      larg-comp rms      rel-larg-comp rms    #-comps rms     hidden-nodes  rms'
-!print *, ' -------------------------------------------------------------------------------------------------------'
-!print *,
 
 
 if(anfn > 1.0) then
@@ -408,14 +353,14 @@ CALL SAVE_SUB_NET
 
   do iw=1,mnew
     do jw=1,mnew
-      net_out((iw-1)*n + jw) = jj(iw,jw)
+      net_out(iw + (jw-1)*n ) = jj(iw,jw)
     end do
   end do
 
 sampled_nodes(1:n) = idx(1:n)
   do iw=1,n
     do jw=1,n
-      sampled_edges((iw-1)*n + jw) = a_aux(iw,jw)
+      sampled_edges(iw + (jw-1)*n) = a_aux(iw,jw)
     end do
   end do
 DEALLOCATE (jj)

@@ -78,9 +78,9 @@ netsample <-
       edges_sampled = integer(n^2)
     )
 
-    #M <- res$out[1 : res$n_sampled]
-    #M <- matrix(M, sqrt(length(M)))
-    #s <- igraph::graph_from_adjacency_matrix(M)
+    M <- res$edges_sampled
+    M <- matrix(M, sqrt(length(M)))
+    s <- igraph::graph_from_adjacency_matrix(M)
 
     #
     res$nodes_sampled
