@@ -42,5 +42,7 @@ testthat::test_that("we can run netsample",{
       ## if treat both sampled (2s) and unsampled (1s) edges as 1s...
       out <- as.integer(res$edges_sampled > 0)
       ## then input should be same as output network
-      expect.identical(res$input, out)
+      testthat::expect_identical(res$input, out)
+
+
 })
