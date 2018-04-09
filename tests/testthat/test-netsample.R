@@ -44,5 +44,13 @@ testthat::test_that("we can run netsample",{
       ## then input should be same as output network
       testthat::expect_identical(res$input, out)
 
+      M <- res$edges_sampled
+      M <- matrix(M, sqrt(length(M)))
+      s <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
 
 })
+
+      E(s)$sampled <- c("unsampled", "sampled")[E(s)$weight]
+
+ggraph(s, layout = 'kk') +
+  geom_edge_link(aes(colour = sampled))
