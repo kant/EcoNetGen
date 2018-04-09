@@ -1,12 +1,14 @@
 Dear CRAN Maintainers,
 
 We are pleased to provide an intial Release of NetGen for consideration for the CRAN
-repository. This release now includes FORTRAN in single quotes and includes a reference
-to the preprint on arXiv where a description of the algorithms implemented here are
-described, as requested.  
+repository. 
 
-Please note that introducing an arXiv identifier in the manner directed by CRAN triggers a 
-NOTE on the automated CRAN checks.  
+This release now quotes names of computer languages like FORTRAN that do not trigger
+any spelling NOTE in single quotes and does not quote names of cited authors such
+as de Aguiar, which do trigger a NOTE regarding spelling, as directed by CRAN
+maintainers.  Please note that hese NOTES are not in fact spelling errors. 
+
+Thank you for all you do for the R community!
 
 
 ## Test environments
