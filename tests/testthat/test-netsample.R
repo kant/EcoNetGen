@@ -38,19 +38,43 @@ testthat::test_that("we can run netsample",{
         nodes_sampled = integer(n),
         edges_sampled = integer(n^2)
       )
-
-      ## if treat both sampled (2s) and unsampled (1s) edges as 1s...
-      out <- as.integer(res$edges_sampled > 0)
-      ## then input should be same as output network
-      testthat::expect_identical(res$input, out)
-
       M <- res$edges_sampled
       M <- matrix(M, sqrt(length(M)))
-      s <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
+      out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
+      igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
+      igraph::delete_edge_attr("weight")
+
+      node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
+      igraph::V(out)$sampled <- node_labels
+
+
+
+      ## if treat both sampled (2s) and unsampled (1s) edges as 1s...
+      tmp <- as.integer(res$edges_sampled > 0)
+      ## then input should be same as output network
+      testthat::expect_identical(res$input, tmp)
+
+
+      ## Test that sampled network and subset network match:
+      int_to_igraph <- function(x, ...){
+        M <- matrix(x, sqrt(length(x)))
+        igraph::graph_from_adjacency_matrix(M, ...)
+      }
+      s <- int_to_igraph(res$out)
+      fortran_sampled <- subgraph.edges(s, E(s))
+
+      ## Subset the sampled network:
+      sampled <- subgraph.edges(out, E(out)[sampled=="sampled"])
+
+      ## How do we compare these? Ideally something stricted than this, but oh well:
+      testthat::expect_equal(length(E(fotran_sampled)),
+                             length(E(sampled)))
+
+      ## Visual inspection with ggraph:
+      # ggraph(sampled,layout = "kk") + geom_edge_link()
+      # ggraph(fortran_sampled,layout = "kk") + geom_edge_link()
 
 })
 
-#      E(s)$sampled <- c("unsampled", "sampled")[E(s)$weight]
 
-#ggraph(s, layout = 'kk') +
-#  geom_edge_link(aes(colour = sampled))
+

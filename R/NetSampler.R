@@ -39,6 +39,7 @@
 #' - netlinks.txt --  links in red or blue if connect subnet or not
 #' @export
 #' @importFrom igraph cluster_edge_betweenness as.undirected groups as_adjacency_matrix
+#' delete_edge_attr E
 netsample <-
   function(network_in,
            module_sizes = NULL,
@@ -78,18 +79,34 @@ netsample <-
       edges_sampled = integer(n^2)
     )
 
+
     M <- res$edges_sampled
     M <- matrix(M, sqrt(length(M)))
-    s <- igraph::graph_from_adjacency_matrix(M)
+    out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
+    igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
+    igraph::delete_edge_attr("weight")
 
-    #
-    res$nodes_sampled
+    node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
+    igraph::V(out)$sampled <- node_labels
 
-    # 2 = sampled, 1 = not sampled, 0 = no link
-    res$edges_sampled
+    out
+}
 
-    res
-  }
+
+
+
+
+
+#    library(ggraph)
+#    ggraph(out, layout = 'kk') +
+#      geom_edge_link(aes(colour = sampled)) +
+#      geom_node_point(aes(colour = sampled))
+
+
+#sampled <- subgraph.edges(out, E(out)[sampled=="sampled"])
+#ggraph(sampled, layout = 'kk') +
+#        geom_edge_link(aes(colour = sampled)) +
+#        geom_node_point(aes(colour = sampled))
 
 
 # the output file has eleven columns with the following results:
