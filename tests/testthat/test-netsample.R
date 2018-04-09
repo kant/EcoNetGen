@@ -50,7 +50,7 @@ testthat::test_that("we can run netsample",{
 
 })
 
-      E(s)$sampled <- c("unsampled", "sampled")[E(s)$weight]
+#      E(s)$sampled <- c("unsampled", "sampled")[E(s)$weight]
 
-ggraph(s, layout = 'kk') +
-  geom_edge_link(aes(colour = sampled))
+#ggraph(s, layout = 'kk') +
+#  geom_edge_link(aes(colour = sampled))
