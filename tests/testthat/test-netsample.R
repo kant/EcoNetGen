@@ -10,6 +10,8 @@ testthat::test_that("we can run netsample",{
 
 
 testthat::test_that("we can run netsample",{
+      library(EcoNetGen)
+      library(igraph)
 
       network_in <- netgen()
       module_sizes = NULL
@@ -42,7 +44,6 @@ testthat::test_that("we can run netsample",{
       M <- matrix(M, sqrt(length(M)))
       out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
       igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
-      igraph::delete_edge_attr("weight")
 
       node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
       igraph::V(out)$sampled <- node_labels
@@ -67,8 +68,8 @@ testthat::test_that("we can run netsample",{
       sampled <- subgraph.edges(out, E(out)[sampled=="sampled"])
 
       ## How do we compare these? Ideally something stricted than this, but oh well:
-      testthat::expect_equal(length(E(fotran_sampled)),
-                             length(E(sampled)))
+      testthat::expect_equal(length(igraph::E(fortran_sampled)),
+                             length(igraph::E(sampled)))
 
       ## Visual inspection with ggraph:
       # ggraph(sampled,layout = "kk") + geom_edge_link()

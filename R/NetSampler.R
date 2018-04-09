@@ -84,7 +84,7 @@ netsample <-
     M <- matrix(M, sqrt(length(M)))
     out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
     igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
-    igraph::delete_edge_attr("weight")
+    igraph::delete_edge_attr(out, "weight")
 
     node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
     igraph::V(out)$sampled <- node_labels
