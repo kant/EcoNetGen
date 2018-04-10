@@ -42,23 +42,34 @@
 #' delete_edge_attr E
 netsample <-
   function(network_in,
-           module_sizes = NULL,
            crit = c(1,0),
            key_nodes = c(10, 50, 10, 1000),
            anfn = 0.5,
            numb_hidden = 0,
-           hidden_modules = c(1,5,6,0,0,0,0,0,0,0)
+           hidden_modules = c(0,0,0,0,0,0,0,0,0,0),
+           module_sizes = NULL
            ) {
 
 
+    ## NOTE: if module_sizes are not provided, then we calculate
+    ## module sizes on the fly, though the FORTRAN netgen code
+    ## returns these. Not clear what clustering algorithm
+    ## Marcus's FORTRAN routine uses for that. This has some
+    ## additional performance overhead; in particular, code
+    ## seeking to create many resamplings from the same network
+    ## should be sure to include module sizes list.
 
     if(is.null(module_sizes)){
-      community <- igraph::cluster_edge_betweenness(igraph::as.undirected(network_in))
-      module_sizes <- vapply(igraph::groups(community), length, integer(1))
+      community <- igraph::cluster_edge_betweenness(
+        igraph::as.undirected(network_in))
+      module_sizes <- vapply(igraph::groups(community),
+                             length, integer(1))
     }
 
     ## Convert igraph to integer vector
-    net <- as.integer(as.matrix(igraph::as_adjacency_matrix(network_in)))
+    net <-
+      as.integer(
+        as.matrix(igraph::as_adjacency_matrix(network_in)))
 
     ## number of nodes
     n <- as.integer(sqrt(length(net)))
@@ -83,46 +94,30 @@ netsample <-
     M <- res$edges_sampled
     M <- matrix(M, sqrt(length(M)))
     out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
-    igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
-    igraph::delete_edge_attr(out, "weight")
 
-    node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
-    igraph::V(out)$sampled <- node_labels
+    labs <- c("unsampled", "sampled")
+    igraph::E(out)$label <- labs[igraph::E(out)$weight]
+    out <- igraph::delete_edge_attr(out, "weight")
+
+    node_labels <- labs[1 + as.integer(res$nodes_sampled > 0)]
+    igraph::V(out)$label <- node_labels
 
     out
 }
 
 
 
-
-
-
 #    library(ggraph)
 #    ggraph(out, layout = 'kk') +
-#      geom_edge_link(aes(colour = sampled)) +
-#      geom_node_point(aes(colour = sampled))
+#      geom_edge_link(aes(colour = label)) +
+#      geom_node_point(aes(colour = label))
 
 
 #sampled <- subgraph.edges(out, E(out)[sampled=="sampled"])
 #ggraph(sampled, layout = 'kk') +
-#        geom_edge_link(aes(colour = sampled)) +
-#        geom_node_point(aes(colour = sampled))
+#        geom_edge_link(aes(colour = label)) +
+#        geom_node_point(aes(colour = label))
 
 
-# the output file has eleven columns with the following results:
-# m  ssn  slc  rslc  hn  ncomp  V-ssn  V-slc   V-rslc  V-hn  V-ncomp
-#
-#where
-#
-# m = number of key nodes
-# ssn = average size of sampled network
-# slc = average size of largest connected component
-# rslc = average size of largest connected component / ssn
-# hn = average number of hidden nodes found
-# ncomp = average number of components of sampled networks
-# V-ssn = variance of size of sampled network
-# V-slc = variance of size of largest connected component
-# V-rslc = variance of size of largest connected component / ssn
-# V-hn = variance of number of hidden nodes found
-# V-ncomp = variance of number of components of sampled networks
+
 

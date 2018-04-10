@@ -4,14 +4,12 @@
 \alias{netsample}
 \title{Network Sampling Routine}
 \usage{
-netsample(network_in, module_sizes = NULL, crit = c(1, 0),
-  key_nodes = c(10, 50, 10, 1000), anfn = 0.5, numb_hidden = 0,
-  hidden_modules = c(1, 5, 6, 0, 0, 0, 0, 0, 0, 0))
+netsample(network_in, crit = c(1, 0), key_nodes = c(10, 50, 10, 1000),
+  anfn = 0.5, numb_hidden = 0, hidden_modules = c(0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0), module_sizes = NULL)
 }
 \arguments{
 \item{network_in}{input network (as igraph object)}
-
-\item{module_sizes}{integer vector giving the size of each module (optional)}
 
 \item{crit}{sampling criteria for key nodes and neighbors, see details}
 
@@ -23,6 +21,8 @@ and number of realizations nr mi, mf, delta-m, nr}
 \item{numb_hidden}{number of modules to exclude}
 
 \item{hidden_modules}{list of modules to exclude (max 10 modules; only the first numb_hidden are used)}
+
+\item{module_sizes}{integer vector giving the size of each module (optional)}
 }
 \value{
 output files are:
