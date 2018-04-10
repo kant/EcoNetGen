@@ -90,7 +90,8 @@ INTEGER, ALLOCATABLE :: vk(:),row(:),col(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
 REAL, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
-
+INTEGER mm
+mm = 1
 
 icrit = crit(1)
 neigh_crit = crit(2)
@@ -104,9 +105,10 @@ ALLOCATE (a_aux(n,n))
 ALLOCATE (v(n),vk(n))
 ALLOCATE (a(n,n))
 ALLOCATE (idx(n))
+ALLOCATE (w(n,n))
 
 if(neigh_crit == 1) then
-    ALLOCATE (w(n,n))
+!    ALLOCATE (w(n,n))
     w = 0.0
 end if
 
@@ -202,7 +204,7 @@ CALL SAMPLING_CRITERION(icrit)
 if(anfn > 1.0) then
     nsize = m*nfn     ! maximum size when all nfn neighbors are added
 else
-    nsize = 5.0*m*av_degree*anfn  ! estimated size times 5 for safety
+    nsize = INT(5.0*m*av_degree*anfn)  ! estimated size times 5 for safety
 end if
 a_aux = a
 ALLOCATE (row(nsize),col(nsize))  ! index of nodes in subnetwork
@@ -250,7 +252,7 @@ do k=1,mm
         mkk = mk
         if(mk > nfn) mkk = nfn             ! add at most nfn
     else
-        mkk = mk*anfn                      ! add the fraction anfn
+        mkk = INT(mk*anfn)                 ! add the fraction anfn
     end if
     ! add neighbors randomly
     if(neigh_crit == 0) then
@@ -349,7 +351,7 @@ do l=1,imods
 end do
 
 ! save the subnetwork
-CALL SAVE_SUB_NET
+!CALL SAVE_SUB_NET
 
   do iw=1,mnew
     do jw=1,mnew
@@ -364,8 +366,8 @@ sampled_nodes(1:n) = idx(1:n)
     end do
   end do
 DEALLOCATE (jj)
-CLOSE(27)
-CLOSE(28)
+!CLOSE(27)
+!CLOSE(28)
 
 
 ! print results on file
@@ -381,7 +383,7 @@ CLOSE(28)
 DEALLOCATE (row,col)
 DEALLOCATE(v,vk,prob_aux,key_prob)
 DEALLOCATE(a,a_aux,idx,modsize,module_status)
-
+DEALLOCATE(w)
 !110 FORMAT(A4,1x,A4)
 !112 FORMAT(3(i10,10x),F10.4,10x,2(i10,10x))
 
@@ -398,7 +400,7 @@ ALLOCATE (prob(n))
 
 prob = 0.0
 IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
-    OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
+!    OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
     IF(icrit > 0) THEN
         np = 10000
         ALLOCATE (x(0:np),rhoc(0:np),prob_aux(0:np))
@@ -406,14 +408,14 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             av=1.0
             sigma = 0.2
             CALL lognormal(np,av,sigma,x,rhoc)   ! generate log-normal distribution
-            print *, 'Sampling key nodes according to lognormal abundance distribution'
+!            print *, 'Sampling key nodes according to lognormal abundance distribution'
         ELSE
             y = 0.5
             CALL fisherlog(np,y,x,rhoc)          ! generate fisher distribution
-            print *, 'Sampling key nodes according to Fisher abundance distribution'
+!            print *, 'Sampling key nodes according to Fisher abundance distribution'
         END IF
     ELSE
-        print *, 'Sampling key nodes randomly'
+!        print *, 'Sampling key nodes randomly'
     END IF
 
     do im=1,imods
@@ -442,14 +444,14 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
-            write(30,*) i,prob(i+ijump)
+!            write(30,*) i,prob(i+ijump)
         end do
     end do
-    CLOSE(30)
+!    CLOSE(30)
 
     ELSE IF(icrit == 3) THEN     ! exponential abundance distribution
-        OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
-        print *, 'Sampling key nodes according to exponential abundance distribution'
+!        OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
+!        print *, 'Sampling key nodes according to exponential abundance distribution'
         do im=1,imods
             if(im == 1) then
                 ijump = 0
@@ -470,14 +472,14 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
-            write(30,*) i,prob(i+ijump)
+!            write(30,*) i,prob(i+ijump)
         end do
     end do
-    CLOSE(30)
+!    CLOSE(30)
 
     ELSE IF(icrit == 4) THEN                        ! sample according to degree
-        OPEN(UNIT=20,FILE='degree.txt',STATUS='UNKNOWN')
-        print *, 'Sampling key nodes according to degree'
+!        OPEN(UNIT=20,FILE='degree.txt',STATUS='UNKNOWN')
+!        print *, 'Sampling key nodes according to degree'
         prob = sum(a,DIM=1)
         DO im=1,imods
             if(im == 1) then
@@ -493,16 +495,16 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             end if
         END DO
         key_prob(1) = prob(1)
-        write(20,*) 1,prob(1)
+!        write(20,*) 1,prob(1)
         do i=2,n
             key_prob(i) = key_prob(i-1) + prob(i)
-            write(20,*) i,prob(i)
+!            write(20,*) i,prob(i)
         end do
-    CLOSE(20)
+!    CLOSE(20)
 
     ELSE IF(icrit == 5) THEN                        ! sample according to module
-        OPEN(UNIT=20,FILE='module.txt',STATUS='UNKNOWN')
-        print *, 'Sampling key nodes according to module probabilities'
+!        OPEN(UNIT=20,FILE='module.txt',STATUS='UNKNOWN')
+!        print *, 'Sampling key nodes according to module probabilities'
         do im=1,imods
             if(im == 1) then
                 ijump = 0
@@ -520,14 +522,14 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 key_prob(1+ijump) = key_prob(ijump) + prob(1+ijump)
             end if
-            write(20,*) 1,prob(1+ijump)
+!            write(20,*) 1,prob(1+ijump)
             do i=2,modsize(im)
                 prob(i+ijump) = prob(1+ijump)
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
-                write(20,*) i,prob(i+ijump)
+!                write(20,*) i,prob(i+ijump)
             end do
     end do
-    CLOSE(20)
+!    CLOSE(20)
 
 END IF
 
@@ -541,44 +543,44 @@ END SUBROUTINE SAMPLING_CRITERION
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SUBROUTINE SAVE_SUB_NET
-USE globalvar
-CHARACTER*4 node1,node2
+!SUBROUTINE SAVE_SUB_NET
+!USE globalvar
+!CHARACTER*4 node1,node2
 
 ! save node color = red if belonging to subnetwork or blue if it does not
 ! idx(iw) = 0 if iw is not in subnetwork
-OPEN(UNIT=21,FILE="colored_nodes.txt",STATUS='UNKNOWN')
-    do iw=1,n
-        CALL NUMBSTR(4,iw,node1)
-        if(idx(iw) == 0) then
-            write(21,110) node1,'blue'
-        else
-            write(21,110) node1,'red '
-        end if
-    end do
-CLOSE(21)
+!OPEN(UNIT=21,FILE="colored_nodes.txt",STATUS='UNKNOWN')
+!    do iw=1,n
+!        CALL NUMBSTR(4,iw,node1)
+!        if(idx(iw) == 0) then
+!            write(21,110) node1,'blue'
+!        else
+!            write(21,110) node1,'red '
+!        end if
+!    end do
+!CLOSE(21)
 
 ! save link color = red if belonging to subnetwork or blue if it does not
-OPEN(UNIT=21,FILE="colored_links.txt",STATUS='UNKNOWN')
-    do iw=1,n
-        CALL NUMBSTR(4,iw,node1)
-        do jw=iw+1,n
-            if(a_aux(iw,jw) /= 0) then
-                CALL NUMBSTR(4,jw,node2)
-                if(a_aux(iw,jw) == 2) then
-                    write(21,111) node1,node2,'red '
-                else
-                    write(21,111) node1,node2,'blue'
-                end if
-            end if
-        end do
-    end do
-CLOSE(21)
-
-110 FORMAT(A4,1x,A4)
-111 FORMAT(A4,1x,A4,1x,A4)
-
-END SUBROUTINE SAVE_SUB_NET
+!OPEN(UNIT=21,FILE="colored_links.txt",STATUS='UNKNOWN')
+!    do iw=1,n
+!        CALL NUMBSTR(4,iw,node1)
+!        do jw=iw+1,n
+!            if(a_aux(iw,jw) /= 0) then
+!                CALL NUMBSTR(4,jw,node2)
+!                if(a_aux(iw,jw) == 2) then
+!                    write(21,111) node1,node2,'red '
+!                else
+!                    write(21,111) node1,node2,'blue'
+!                end if
+!            end if
+!        end do
+!    end do
+!CLOSE(21)
+!
+!110 FORMAT(A4,1x,A4)
+!111 FORMAT(A4,1x,A4,1x,A4)
+!
+!END SUBROUTINE SAVE_SUB_NET
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
