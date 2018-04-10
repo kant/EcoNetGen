@@ -2,7 +2,7 @@ library(testthat)
 
 
 test_that("we can create a mixed type network", {
-n_modav <- c(500,30)
+n_modav <- c(150,30)
 cutoffs <- c(15,5)
 net_type <- 0
 net_degree <- 10.0
@@ -18,7 +18,7 @@ expect_is(p1, "ggplot")
 
 
 test_that("we can create all types of network", {
-        n_modav <- c(250,20)
+        n_modav <- c(150,20)
         cutoffs <- c(15,5)
         net_type <- 0
         net_degree <- 10.0

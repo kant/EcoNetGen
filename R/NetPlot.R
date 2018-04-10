@@ -1,4 +1,6 @@
-# https://matthewlincoln.net/2014/12/20/adjacency-matrix-plots-with-r-and-ggplot2.html
+# See https://matthewlincoln.net/2014/12/20/adjacency-matrix-plots-with-r-and-ggplot2.html
+# Also, see matrix plot method in dev version of ggraph
+
 
 #' Plot network adjacency matrix
 #'
@@ -15,7 +17,12 @@ adj_plot <- function(graph){
 
   edge_list <- igraph::get.data.frame(graph, what = "edges")
 
-  ggplot(edge_list, aes_string(x = "from", y = "to")) +
+  if("label" %in% names(edge_list)){
+    g <- ggplot(edge_list, aes_string(x = "from", y = "to", fill="label"))
+  } else {
+    g <- ggplot(edge_list, aes_string(x = "from", y = "to"))
+  }
+      g +
       geom_raster() + theme_bw() +
       scale_x_discrete(drop = FALSE) +
       scale_y_discrete(drop = FALSE) +

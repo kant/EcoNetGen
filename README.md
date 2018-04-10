@@ -22,25 +22,24 @@ You can install EcoNetGen from github with:
 devtools::install_github("cboettig/EcoNetGen")
 ```
 
-## Example
+## Generate random networks
 
 This is a basic example which generates a network. See `?netgen` for
 documentation describing the parameter arguments.
 
 ``` r
 library(EcoNetGen)
-network <- netgen(n_modav = c(250, 20), 
-                  cutoffs = c(50, 5), 
-                  net_type = 41, 
-                  net_degree = 10,
-                  net_rewire = c(0.07,0.2),
-                  mod_probs = c(0.2, 0.0, 0.3, 0.3, 0.2, 0.0, 0.0))
+network <- netgen(n_modav = c(150, 20), # network size, ave module size
+                  cutoffs = c(20, 5),   # module and submodule min sizes
+                  net_type = 41,        # bi-partite nested
+                  net_degree = 10,      # average degree of connection
+                  net_rewire = c(0.07,0.2)) # rewire probabilities
 #> 
-#> module count = 4 
-#> average degree = 8.736 
-#> average module size = 62.5 
+#> module count = 3 
+#> average degree = 8.62666666666667 
+#> average module size = 50 
 #> number of components = 1 
-#> size of largest component = 250
+#> size of largest component = 150
 ```
 
 We can plot the resulting `igraph` as an adjacency matrix:
@@ -71,6 +70,49 @@ plot(network, vertex.size= 0, vertex.label=NA,
 
 ![](man/figures/README-unnamed-chunk-3-1.png)<!-- -->
 
+## Sample from a network
+
+``` r
+subnet <- netsample(network,
+                 crit = c(4,0), # Sample key nodes by degree, neighbors randomly
+                 key_nodes = c(50, 50, 10, 1000),
+                 anfn = 0.5, # samples 50% of neighbors
+                 numb_hidden = 0,
+                 hidden_modules = c(0,0,0,0,0,0,0,0,0,0)
+                 )
+```
+
+We can plot the adjacency network, coloring red the sampled nodes. Note
+that `adj_plot` objects are just `ggplot` graphs (`geom_raster`) under
+the hood, and can be modified with the usual `ggplot` arguments, such as
+adding a title here.
+
+``` r
+library(ggplot2)
+adj_plot(subnet) + ggtitle("Adjacency matrix of sampled vs full network")
+```
+
+![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+
+Don’t forget to check out the `ggraph` package, which isn’t required for
+`EcoNetGen` but provides a lot of additional great ways to plot your
+network. Here we plot the simulated network color-coding the sampled
+nodes and edges (indicated by the label “sampled” on vertices and
+edges):
+
+``` r
+library(ggraph)
+ggraph(subnet, layout = 'kk') +
+        geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
+        geom_node_point(aes(colour = label)) +
+        theme_graph()
+#> Warning: Ignoring unknown aesthetics: edge_size
+```
+
+![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+
+## A few example statistics
+
 And we can compute common statistics from igraph as well. Here we
 confirm that clustering by “edge betweeness” gives us the expected
 number of modules:
@@ -78,7 +120,7 @@ number of modules:
 ``` r
 community <- cluster_edge_betweenness(as.undirected(network))
 length(groups(community))
-#> [1] 4
+#> [1] 3
 ```
 
 We can check the size of each module as well:
@@ -86,13 +128,13 @@ We can check the size of each module as well:
 ``` r
 module_sizes <- sapply(groups(community), length)
 module_sizes
-#>  1  2  3  4 
-#> 53 52 63 82
+#>  1  2  3 
+#> 47 76 27
 mean(module_sizes)
-#> [1] 62.5
+#> [1] 50
 ```
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 8.752
+#> [1] 8.64
 ```
