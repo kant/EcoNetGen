@@ -65,12 +65,11 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! module defining global variables
 MODULE globalvar
-REAL, ALLOCATABLE, SAVE :: key_prob(:)
+REAL*8, ALLOCATABLE, SAVE :: key_prob(:)
 INTEGER, ALLOCATABLE, SAVE :: a(:,:),jj(:,:)
 INTEGER, ALLOCATABLE, SAVE :: a_aux(:,:)
 INTEGER, ALLOCATABLE, SAVE :: module_status(:),modsize(:),idx(:)
 INTEGER, SAVE :: n,imods,mnew
-CHARACTER*60, SAVE :: name_links,name_nodes
 
 END MODULE globalvar
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -80,18 +79,20 @@ SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_mod
 USE globalvar
 integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
 integer sampled_nodes(*), sampled_edges(*)
+REAL*8 anorm, av_degree, auxw
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN) :: key_nodes
 INTEGER, INTENT(IN) :: numb_hidden
 INTEGER, INTENT(IN) :: hidden_modules(10)
-REAL, INTENT(IN) :: anfn
+REAL*8, INTENT(IN) :: anfn
 INTEGER, ALLOCATABLE :: v(:)
 INTEGER, ALLOCATABLE :: vk(:),row(:),col(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
-REAL, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
+REAL*8, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
 INTEGER mm
 mm = 1
+
 
 icrit = crit(1)
 neigh_crit = crit(2)
@@ -116,25 +117,14 @@ CALL init_random_seed()
 
 k = 0
 a = 0
-!do while (k == 0)
-!	read(10,*,iostat=k) i,j
-!    a(i,j) = 1
-!	a(j,i) = 1
-!    if(neigh_crit == 1) then
-!        CALL RANDOM_NUMBER(aux)  ! assign weights to links
-!        auxw = log(1.0/aux)      ! following exponential distribution
-!        w(i,j) = auxw
-!        w(j,i) = auxw
-!    end if
-!end do
-!CLOSE(10)
+
 
 do i=1,n
   do j=1,n
     a(i,j) = net_in(i + (j-1) * n)
     if(neigh_crit == 1) then
         CALL RANDOM_NUMBER(aux)  ! assign weights to links
-        auxw = log(1.0/aux)      ! following exponential distribution
+        auxw = log(1.0D0/aux)      ! following exponential distribution
         w(i,j) = auxw
         w(j,i) = auxw
     end if
@@ -147,7 +137,7 @@ ALLOCATE(degori(n))
 degori = sum(a,DIM=1)
 
 ALLOCATE (key_prob(n),prob_aux(n))
-key_prob = 0.0
+key_prob = 0.0D0
 
 imods = n_modules(1)
 
@@ -173,7 +163,7 @@ hiddentot = sum(modsize*module_status)
 
 ! average connectivity
 icon = SUM(a)
-av_degree = float(icon)/float(n)
+av_degree = dble(icon)/dble(n)
 
 ! find connected clusters of the initial network
 call clusters(a,n,maxsize,nclusters)
@@ -201,7 +191,7 @@ CALL SAMPLING_CRITERION(icrit)
 ! For random sampling key_prob(i) = i/n (if no modules are skipped)
 
 
-if(anfn > 1.0) then
+if(anfn > 1.0D0) then
     nsize = m*nfn     ! maximum size when all nfn neighbors are added
 else
     nsize = INT(5.0*m*av_degree*anfn)  ! estimated size times 5 for safety
@@ -215,7 +205,7 @@ idx = 0
 ! try m times to select key nodes from the network and put nodes in v
 ! actual number of selected nodes is mm and may be smaller than m
 do k=1,m
-    call random_number(aux)
+    CALL RANDOM_NUMBER(aux)
     ! sample according to criterion
     prob_aux = key_prob - aux
     js = minloc(prob_aux,MASK=prob_aux.GT.0.0)
@@ -257,7 +247,7 @@ do k=1,mm
     ! add neighbors randomly
     if(neigh_crit == 0) then
         do l=1,mkk
-            call random_number(aux)
+            CALL RANDOM_NUMBER(aux)
             jsr = int(aux*mk) + 1          ! select random neighbor
             do ll=1,mnew
                 if(vk(jsr) == v(ll)) then  ! check if the neighbor has already been added
@@ -285,7 +275,7 @@ do k=1,mm
         ! w(i,j) = weight for link i-j according to exponential distribution
         ! vw = vector containing the cummulative weights for the links v(k)-neighbors
         ALLOCATE(vw(mk),vwaux(mk))
-        vw = 0.0
+        vw = 0.0D0
         vw(1) = w(v(k),vk(1))
         do iik=2,mk
             vw(iik) = vw(iik-1) + w(v(k),vk(iik))
@@ -293,7 +283,7 @@ do k=1,mm
         anorm = vw(mk)
         vw = vw/anorm
         do l=1,mkk
-            call RANDOM_NUMBER(aux)
+            CALL RANDOM_NUMBER(aux)
             vwaux = vw - aux
             js = minloc(vwaux,MASK=vwaux.GT.0.0)  ! select neighbor according to weight
             do ll=1,mnew
@@ -372,7 +362,6 @@ DEALLOCATE (jj)
 
 ! print results on file
 !OPEN(UNIT=10,FILE=out_file,STATUS='unknown')
-!relsize = float(maxsize)/float(mnew)
 
 !write(10,*) '   m  size larg-comp  rel-larg-comp  #-comps  hidden-nodes '
 !write(10,*) ' ---------------------------------------------------------------'
@@ -394,28 +383,28 @@ END SUBROUTINE subsampling
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SAMPLING_CRITERION(icrit)
 USE globalvar
-REAL, ALLOCATABLE :: prob(:),prob_aux(:),x(:),rhoc(:)
+REAL*8 anorm, sigma, av, y
+REAL*8, ALLOCATABLE :: prob(:),prob_aux(:),x(:),rhoc(:)
 INTEGER :: js(1)
 ALLOCATE (prob(n))
 
+call rndstart()
+
+
 prob = 0.0
 IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
-!    OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
     IF(icrit > 0) THEN
         np = 10000
         ALLOCATE (x(0:np),rhoc(0:np),prob_aux(0:np))
         IF(icrit == 1)  THEN
-            av=1.0
-            sigma = 0.2
+            av = 1.0D0
+            sigma = 0.2D0
             CALL lognormal(np,av,sigma,x,rhoc)   ! generate log-normal distribution
-!            print *, 'Sampling key nodes according to lognormal abundance distribution'
         ELSE
-            y = 0.5
+            y = 0.5D0
             CALL fisherlog(np,y,x,rhoc)          ! generate fisher distribution
-!            print *, 'Sampling key nodes according to Fisher abundance distribution'
         END IF
     ELSE
-!        print *, 'Sampling key nodes randomly'
     END IF
 
     do im=1,imods
@@ -436,7 +425,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
                     j = js(1)
                     prob(i+ijump) = x(j)     ! lognormal or fisher
                 ELSE
-                    prob(i+ijump) = 1.0      ! random (uniform)
+                    prob(i+ijump) = 1.0D0      ! random (uniform)
                 END IF
             end if
             if(im == 1 .and. i == 1) then
@@ -444,14 +433,10 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
-!            write(30,*) i,prob(i+ijump)
         end do
     end do
-!    CLOSE(30)
 
     ELSE IF(icrit == 3) THEN     ! exponential abundance distribution
-!        OPEN(UNIT=30,FILE='abund.txt',STATUS='UNKNOWN')
-!        print *, 'Sampling key nodes according to exponential abundance distribution'
         do im=1,imods
             if(im == 1) then
                 ijump = 0
@@ -461,10 +446,10 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
 
         do i=1,modsize(im)
             if(module_status(im) == 1) then
-                prob(1+ijump) = 0.0
+                prob(1+ijump) = 0.0D0
             else
                 CALL RANDOM_NUMBER(aux)
-                prob(i+ijump) = log(1.0/aux)
+                prob(i+ijump) = log(1.0D0/aux)
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
             if(im == 1 .and. i == 1) then
@@ -472,14 +457,10 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
-!            write(30,*) i,prob(i+ijump)
         end do
     end do
-!    CLOSE(30)
 
     ELSE IF(icrit == 4) THEN                        ! sample according to degree
-!        OPEN(UNIT=20,FILE='degree.txt',STATUS='UNKNOWN')
-!        print *, 'Sampling key nodes according to degree'
         prob = sum(a,DIM=1)
         DO im=1,imods
             if(im == 1) then
@@ -490,21 +471,16 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
 
             if(module_status(im) == 1) then
                 DO i=1,modsize(im)
-                    prob(i+ijump) = 0.0
+                    prob(i+ijump) = 0.0D0
                 END DO
             end if
         END DO
         key_prob(1) = prob(1)
-!        write(20,*) 1,prob(1)
         do i=2,n
             key_prob(i) = key_prob(i-1) + prob(i)
-!            write(20,*) i,prob(i)
         end do
-!    CLOSE(20)
 
     ELSE IF(icrit == 5) THEN                        ! sample according to module
-!        OPEN(UNIT=20,FILE='module.txt',STATUS='UNKNOWN')
-!        print *, 'Sampling key nodes according to module probabilities'
         do im=1,imods
             if(im == 1) then
                 ijump = 0
@@ -512,29 +488,30 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
                 ijump = ijump + modsize(im-1)      ! move from module to module
             end if
             if(module_status(im) == 1) then
-                prob(1+ijump) = 0.0
+                prob(1+ijump) = 0.0D0
             else
                 CALL RANDOM_NUMBER(aux)
-                prob(1+ijump) = log(1.0/aux)/float(modsize(im))
+                prob(1+ijump) = log(1.0D0/aux)/dble(modsize(im))
             end if
             if(im == 1) then
                 key_prob(1) = prob(1)
             else
                 key_prob(1+ijump) = key_prob(ijump) + prob(1+ijump)
             end if
-!            write(20,*) 1,prob(1+ijump)
             do i=2,modsize(im)
                 prob(i+ijump) = prob(1+ijump)
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
-!                write(20,*) i,prob(i+ijump)
             end do
     end do
-!    CLOSE(20)
 
 END IF
 
-anorm = key_prob(n)
-key_prob = key_prob/anorm
+anorm = dble(key_prob(n))
+key_prob = dble(key_prob/anorm)
+
+call rndend()
+
+
 ! key_prob is a vector with entries between 0 and 1
 ! and contains the cummulative probability of sampling the  nodes
 RETURN
@@ -542,58 +519,20 @@ END SUBROUTINE SAMPLING_CRITERION
 
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!SUBROUTINE SAVE_SUB_NET
-!USE globalvar
-!CHARACTER*4 node1,node2
-
-! save node color = red if belonging to subnetwork or blue if it does not
-! idx(iw) = 0 if iw is not in subnetwork
-!OPEN(UNIT=21,FILE="colored_nodes.txt",STATUS='UNKNOWN')
-!    do iw=1,n
-!        CALL NUMBSTR(4,iw,node1)
-!        if(idx(iw) == 0) then
-!            write(21,110) node1,'blue'
-!        else
-!            write(21,110) node1,'red '
-!        end if
-!    end do
-!CLOSE(21)
-
-! save link color = red if belonging to subnetwork or blue if it does not
-!OPEN(UNIT=21,FILE="colored_links.txt",STATUS='UNKNOWN')
-!    do iw=1,n
-!        CALL NUMBSTR(4,iw,node1)
-!        do jw=iw+1,n
-!            if(a_aux(iw,jw) /= 0) then
-!                CALL NUMBSTR(4,jw,node2)
-!                if(a_aux(iw,jw) == 2) then
-!                    write(21,111) node1,node2,'red '
-!                else
-!                    write(21,111) node1,node2,'blue'
-!                end if
-!            end if
-!        end do
-!    end do
-!CLOSE(21)
-!
-!110 FORMAT(A4,1x,A4)
-!111 FORMAT(A4,1x,A4,1x,A4)
-!
-!END SUBROUTINE SAVE_SUB_NET
-
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! generates a log-normal distribution with mean av and variace sigma
 ! rho(x) = 1/(sqrt(2*pi)*sigma*x) * exp( -(ln(x)-ln(av))^2/(2*sigma^2) )
 SUBROUTINE lognormal(np,av,sigma,x,rhoc)
-REAL rho(np),rhoc(0:np),x(0:np)
-xmax = av + 5.0*sigma
-xstep = xmax/float(np)
-x = 0.0
-rhoc = 0.0
-aux1 = 1.0/(sigma*sqrt(2.0*3.1415926))
-aux2 = 0.5/(sigma**2)
+INTEGER np
+REAL*8  xmax, xstep, aux1, aux2, avlog, av, sigma, anorm
+REAL*8 rho(np),rhoc(0:np),x(0:np)
+xmax =  av + 5.0D0 * sigma
+xstep = xmax/dble(np)
+x = 0.0D0
+rhoc = 0.0D0
+aux1 =  1.0D0/(sigma*sqrt(2.0D0*3.1415926D0))
+aux2 =  0.5D0/(sigma**2)
 avlog = log(av)
 
 do i=1,np
@@ -604,11 +543,6 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-!OPEN(UNIT=20,FILE='lognormal.txt',STATUS='UNKNOWN')
-!do i=1,np
-!write(20,*) x(i),rho(i),rhoc(i)
-!end do
-!close(20)
 END SUBROUTINE lognormal
 
 
@@ -622,15 +556,18 @@ END SUBROUTINE lognormal
 !
 ! N = sum n*Sn = alpha*y/(1-y) = total number of individuals
 ! y = (N/alpha)/(1+N/alpha) -> 1-y = 1/(1+N/alpha) -> S = alpha*ln(1+N/alpha)
-SUBROUTINE fisherlog(np,y,x,rhoc)
-REAL rho(np),rhoc(0:np),x(0:np)
 
-xmax = 10.0
-xstep = xmax/float(np)
+SUBROUTINE fisherlog(np,y,x,rhoc)
+REAL*8 xmax, xstep, aux1, y, anorm
+INTEGER np
+REAL*8 rho(np),rhoc(0:np),x(0:np)
+
+xmax = 10.0D0
+xstep = xmax/dble(np)
 x = 0.0
-rhoc = 0.0
-aux1 = -1.0/log(1-y)
-x(0) = 1.0
+rhoc = 0.0D0
+aux1 = -1.0D0/log(1-y)
+x(0) = 1.0D0
 
 do i=1,np
 x(i) = x(i-1) + xstep
@@ -640,31 +577,9 @@ end do
 anorm = rhoc(np)
 rhoc = rhoc/anorm
 
-!OPEN(UNIT=20,FILE='logfisher.txt',STATUS='UNKNOWN')
-!do i=1,np
-!write(20,*) x(i),rho(i),rhoc(i)
-!end do
-!close(20)
 END SUBROUTINE fisherlog
 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SUBROUTINE NUMBSTR(ID,NUMBER,STR)
-CHARACTER*(*) STR
-INTEGER*4 ID,NUMBER
-CHARACTER*1 B
-INTEGER*4 IA0,N,I,IT
-IA0 = ICHAR('0')
-N = NUMBER
-DO I=1,ID
-J = ID + 1 - I
-IT = MOD(N,10)
-B = CHAR(IA0 + IT)
-STR(J:J) = B
-N = (N - IT)/10
-END DO
-RETURN
-END
 
 
 

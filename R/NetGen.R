@@ -39,9 +39,9 @@ netgen <-
       as.integer(n_modav),
       as.integer(cutoffs),
       as.integer(net_type),
-      as.single(net_degree),
-      as.single(net_rewire),
-      as.single(mod_probs),
+      as.double(net_degree),
+      as.double(net_rewire),
+      as.double(mod_probs),
       modcount = integer(1L)
     )
 
