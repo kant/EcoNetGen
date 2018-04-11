@@ -1,5 +1,5 @@
 library(testthat)
-
+testthat::context("netgen")
 
 test_that("we can create a mixed type network", {
 n_modav <- c(150,30)
