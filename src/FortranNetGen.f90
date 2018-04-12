@@ -84,7 +84,10 @@ modsize_sav = 0      ! save size of each module
 
 do while(modtot < n)
 
-    CALL RANDOM_NUMBER(aux)
+
+    !! This one seems OKAY
+    aux = unifrnd()
+    !CALL RANDOM_NUMBER(aux)
 
     modsize = int(modav*log(1.0D0/aux))
     if( modav == n) modsize = n         !if modsize = n build a single network
@@ -105,7 +108,9 @@ do while(modtot < n)
     ! build network according to nettype
     !
     IF(nettype == 0) THEN
-        CALL RANDOM_NUMBER(aux)   !choose module type
+        !! This one seems okay too
+        aux = unifrnd()
+        !CALL RANDOM_NUMBER(aux)   !choose module type
         IF(aux < pc1) THEN
             p = avk/dble(modsize-1)
             CALL RANDOMMOD(ini,modtot)
@@ -147,12 +152,15 @@ do k=1,modcount
         do j=i+1,modsize_sav(k)
             jj = j + ini
             if(a(ii,jj) == 1) then
-                CALL RANDOM_NUMBER(aux)
+                !! this one seems okay
+                aux = unifrnd()
+                !CALL RANDOM_NUMBER(aux)
                 IF(aux < prewloc) THEN
                     a(ii,jj) = 0
                     a(jj,ii) = 0
-                    !! SEGFAULT when changed to unifrnd
-                    CALL RANDOM_NUMBER(aux)
+                    !! This one causes SEGFAULT when changed to unifrnd
+                    aux = unifrnd()
+                    !CALL RANDOM_NUMBER(aux)
                     ijp = int(modsize_sav(k)*aux)+1
                     ijpp = ijp + ini
                     CALL RANDOM_NUMBER(aux)
