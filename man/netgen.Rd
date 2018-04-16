@@ -5,7 +5,8 @@
 \title{netgen}
 \usage{
 netgen(n_modav = c(50, 10), cutoffs = c(3, 0), net_type = 1,
-  net_degree = 10, net_rewire = c(0.3, 0), mod_probs = 0)
+  net_degree = 10, net_rewire = c(0.3, 0), mod_probs = 0,
+  verbose = TRUE)
 }
 \arguments{
 \item{n_modav}{network size and average module size (integer vector, length 2)}
@@ -21,6 +22,8 @@ netgen(n_modav = c(50, 10), cutoffs = c(3, 0), net_type = 1,
 
 \item{mod_probs}{module probabilities for types 1 to 51,
 used for constructing mixed networks, net_type = 0}
+
+\item{verbose}{logical, default TRUE. Should a message report summary statistics?}
 }
 \value{
 an \code{igraph} object

@@ -10,6 +10,7 @@
 #' @param net_rewire global and local  network rewiring probabilities
 #' @param mod_probs module probabilities for types 1 to 51,
 #'   used for constructing mixed networks, net_type = 0
+#' @param verbose logical, default TRUE. Should a message report summary statistics?
 #' @details
 #' network type
 #' - 0 = mixed
@@ -32,7 +33,8 @@ netgen <-
            net_type = 1,
            net_degree = 10,
            net_rewire = c(0.3,0.0),
-           mod_probs = 0) {
+           mod_probs = 0,
+           verbose = TRUE) {
     res <- .Fortran(
       "subnetgen",
       output = integer(n_modav[1]^2),
@@ -46,9 +48,9 @@ netgen <-
     )
 
 
-
-    cluster_stats(res$output, res$modcount)
-
+    if(verbose){
+      cluster_stats(res$output, res$modcount)
+    }
     M <- res$output
     M <- matrix(M, sqrt(length(M)))
     igraph::graph_from_adjacency_matrix(M)
