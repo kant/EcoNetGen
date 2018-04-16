@@ -8,6 +8,8 @@ testthat::test_that("we can run netsample",{
   res <- netsample(net)
   testthat::expect_is(res, "igraph")
 
+  p1 <- adj_plot(res)
+  expect_is(p1, "ggplot")
 })
 
 
