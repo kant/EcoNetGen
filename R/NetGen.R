@@ -56,7 +56,7 @@ netgen <-
   }
 
 cluster_stats <- function(M, modcount){
-  n = sqrt(length(M))
+  n <- sqrt(length(M))
   res <- .Fortran("clusters",
                   a = as.integer(M),
                   n = as.integer(n),

@@ -6,22 +6,41 @@ testthat::test_that("we can run netsample",{
   net <- netgen()
   testthat::expect_is(net, "igraph")
   res <- netsample(net)
+  testthat::expect_is(res, "igraph")
+
 })
 
+
+testthat::test_that("net sample works with other settings", {
+
+  network_in <- netgen()
+  sn <- netsample(network_in,
+                  module_sizes = NULL,
+                  crit = c(1,1),
+                  key_nodes = c(10, 50, 10, 1000),
+                  anfn = 0.5,
+                  numb_hidden = 0,
+                  hidden_modules = c(1,5,6,0,0,0,0,0,0,0))
+  testthat::expect_is(sn, "igraph")
+
+
+})
 
 testthat::test_that("we can run netsample",{
       library(EcoNetGen)
       library(igraph)
 
       network_in <- netgen()
-      module_sizes = NULL
-      crit = c(1,0)
-      key_nodes = c(10, 50, 10, 1000)
-      anfn = 0.5
-      numb_hidden = 0
-      hidden_modules = c(1,5,6,0,0,0,0,0,0,0)
-      community <- igraph::cluster_edge_betweenness(igraph::as.undirected(network_in))
-      module_sizes <- vapply(igraph::groups(community), length, integer(1))
+      module_sizes <- NULL
+      crit <- c(1,0)
+      key_nodes <- c(10, 50, 10, 1000)
+      anfn <- 0.5
+      numb_hidden <- 0
+      hidden_modules <- c(1,5,6,0,0,0,0,0,0,0)
+      community <- igraph::cluster_edge_betweenness(
+        igraph::as.undirected(network_in))
+      module_sizes <- vapply(igraph::groups(community),
+                             length, integer(1))
       net <- as.integer(as.matrix(igraph::as_adjacency_matrix(network_in)))
       n <- as.integer(sqrt(length(net)))
 
@@ -43,9 +62,10 @@ testthat::test_that("we can run netsample",{
       M <- res$edges_sampled
       M <- matrix(M, sqrt(length(M)))
       out <- igraph::graph_from_adjacency_matrix(M, weighted = TRUE)
-      igraph::E(out)$sampled <- c("unsampled", "sampled")[igraph::E(out)$weight]
+      labs <- c("unsampled", "sampled")
+      igraph::E(out)$sampled <- labs[igraph::E(out)$weight]
 
-      node_labels <- c("unsampled", "sampled")[1+as.integer(res$nodes_sampled > 0)]
+      node_labels <- labs[1+as.integer(res$nodes_sampled > 0)]
       igraph::V(out)$sampled <- node_labels
 
 
