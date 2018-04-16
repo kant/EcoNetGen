@@ -2,6 +2,9 @@
 #include <R_ext/Rdynload.h>
 #include <Rversion.h>
 
+void F77_SUB(rndstart)(void) { GetRNGstate(); }
+void F77_SUB(rndend)(void) { PutRNGstate(); }
+double F77_SUB(unifrnd)(void) { return unif_rand(); }
 
 void F77_SUB(subnetgen)(int *, int *, int *, int *,float *, float *, float *, int *);
 void F77_SUB(clusters)(int *, int *, int *, int *);
@@ -9,6 +12,9 @@ void F77_SUB(subsampling)(int *, int *, int *, int *, float *,
                           int *, int *, int *, int *, int *, int *, int *);
 
 static R_FortranMethodDef R_FortranDef[] = {
+  {"rndstart",  (DL_FUNC) &F77_SUB(rndstart),  0, NULL},
+  {"rndend",  (DL_FUNC) &F77_SUB(rndend),  0, NULL},
+  {"unifrnd",  (DL_FUNC) &F77_SUB(unifrnd),  0, NULL},
   {"subnetgen",  (DL_FUNC) &F77_SUB(subnetgen),  8, NULL},
   {"clusters",  (DL_FUNC) &F77_SUB(clusters),  4, NULL},
   {"subsampling",  (DL_FUNC) &F77_SUB(subsampling),  12, NULL},

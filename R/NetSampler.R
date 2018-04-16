@@ -80,7 +80,7 @@ netsample <-
       out = integer(n^2),
       as.integer(crit),
       as.integer(key_nodes),
-      as.single(anfn),
+      as.double(anfn),
       as.integer(numb_hidden),
       as.integer(hidden_modules),
       as.integer(n),

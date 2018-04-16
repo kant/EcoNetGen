@@ -5,8 +5,9 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! module defining global variables
 MODULE globals
+  IMPLICIT REAL*8(A-H,O-Z)
   INTEGER, ALLOCATABLE, SAVE :: a(:,:)
-  REAL, SAVE :: avk
+  REAL*8, SAVE :: avk
   INTEGER, SAVE :: nmod,mmod,kmod,ntri1,ntri2,ntri3,nbi1,nbi2
   INTEGER, SAVE :: submodcut
 END MODULE globals
@@ -15,18 +16,21 @@ END MODULE globals
 
 SUBROUTINE subnetgen(output,n_modav,cutoffs,nettype,avkk,rewindprobs,mod_probs, modulecount)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 INTEGER output(*)
 INTEGER modulecount(*)
 INTEGER, INTENT(IN), DIMENSION(2) :: n_modav
 INTEGER, INTENT(IN), DIMENSION(2) :: cutoffs
 INTEGER, INTENT(IN) :: nettype
-REAL, INTENT(IN) :: avkk
-REAL, INTENT(IN), DIMENSION(2) :: rewindprobs
-REAL, INTENT(IN), DIMENSION(7) :: mod_probs
+REAL*8, INTENT(IN) :: avkk
+REAL*8, INTENT(IN), DIMENSION(2) :: rewindprobs
+REAL*8, INTENT(IN), DIMENSION(7) :: mod_probs
 INTEGER, ALLOCATABLE :: degree(:)
 INTEGER, DIMENSION(200) :: modsize_sav
 CHARACTER*20 namenet
 CHARACTER*50 name_network,prop_network,adj_network
+double precision p1, p2, p3, p41, p42, p51, p52, prew, prewloc
+double precision pc1, pc2, pc3, pc41, pc42, pc51, pc52, p, an, aux
 namenet = "default"
 n = n_modav(1)
 modav = n_modav(2)
@@ -52,13 +56,9 @@ name_network = "./output_gen/"//trim(namenet)//trim('_net.txt')
 prop_network = "./output_gen/"//trim(namenet)//trim('_prop.txt')
 adj_network = "./output_gen/"//trim(namenet)//trim('_adj.txt')
 
-! initialize random number generator
-!OPEN(UNIT=50,FILE='./input/seed.in',STATUS='OLD')
-!    READ(50,*) iseed
-!CLOSE(50)
-CALL init_random_seed()
-!CALL RANDOM_SEED(put=iseed)
 
+call rndstart()
+!CALL init_random_seed()
 
 ! cummulative probabilies
 pc1 = p1
@@ -69,12 +69,9 @@ pc42 = pc41 + p42
 pc51 = pc42 + p51
 pc52 = pc51 + p52
 
-an = float(n)
+an = dble(n)
 
 ALLOCATE (a(n,n),degree(n))
-
-! open file to save network properties
-!OPEN(UNIT=15,FILE="prop.txt",STATUS='UNKNOWN')
 
 ! Generate the Modular Network
 
@@ -89,8 +86,12 @@ modsize_sav = 0      ! save size of each module
 
 do while(modtot < n)
 
-    CALL RANDOM_NUMBER(aux)
-    modsize = int(modav*log(1.0/aux))
+
+    !! This one seems OKAY
+    aux = unifrnd()
+    !aux = unifrnd()
+
+    modsize = int(modav*log(1.0D0/aux))
     if( modav == n) modsize = n         !if modsize = n build a single network
 
     if(modsize < mcutoff) then
@@ -109,75 +110,39 @@ do while(modtot < n)
     ! build network according to nettype
     !
     IF(nettype == 0) THEN
-        CALL RANDOM_NUMBER(aux)   !choose module type
+        !! This one seems okay too
+        aux = unifrnd()
+        !aux = unifrnd()   !choose module type
         IF(aux < pc1) THEN
-            p = avk/float(modsize-1)
+            p = avk/dble(modsize-1)
             CALL RANDOMMOD(ini,modtot)
-!            write(6,*) modsize,'         random '
-!            write(15,*) modsize,'random module   '
         ELSE IF(aux < pc2) THEN
             CALL SFMOD(ini,modtot)
-!            write(6,*) modsize,'         scalefree '
-!            write(15,*) modsize,'scalefree module'
         ELSE IF(aux < pc3) THEN
             CALL NESTEDMOD(ini,modtot)
-!            write(6,*) modsize,'         nested '
-!            write(15,*) modsize,'nested module   '
         ELSE IF(aux < pc41) THEN
             CALL BINESTEDMOD(ini,modtot)
-!            write(6,*) modsize,'         bipartite  nested      ','    sub-modules -->',nbi1,nbi2
-!            write(15,*) nbi1,'bipartite nested module 1'
-!            write(15,*) nbi2,'bipartite nested module 2'
         ELSE IF(aux < pc42) THEN
             CALL BIRANDMOD(ini,modtot)
-!            write(6,*) modsize,'         bipartite random       ','    sub-modules -->',nbi1,nbi2
-!            write(15,*) nbi1,'bipartite random module 1'
-!            write(15,*) nbi2,'bipartite random module 2'
         ELSE IF(aux < pc51) THEN
             CALL TRIMOD(ini,modtot,1)
-!            write(6,*) modsize,'         tri-trophic random     ','    sub-modules -->',ntri1,ntri2,ntri3
-!            write(15,*) ntri1,'tri-trophic random module 1'
-!            write(15,*) ntri2,'tri-trophic random module 2'
-!            write(15,*) ntri3,'tri-trophic random module 3'
         ELSE IF(aux < pc52) THEN
             CALL TRIMOD(ini,modtot,2)
-!            write(6,*) modsize,'         tri-trophic bipartite  ','    sub-modules -->',ntri1,ntri2,ntri3
-!            write(15,*) ntri1,'tri-trophic bipartite module 1'
-!            write(15,*) ntri2,'tri-trophic bipartite module 2'
-!            write(15,*) ntri3,'tri-trophic bipartite module 3'
         END IF
     ELSE IF(nettype == 1) THEN
         CALL RANDOMMOD(ini,modtot)
-!    write(6,*) modsize,'         random '
-!        write(15,*) modsize,'random module   '
     ELSE IF(nettype == 2) THEN
         CALL SFMOD(ini,modtot)
-!    write(6,*) modsize,'         scalefree '
-!        write(15,*) modsize,'scalefree module'
     ELSE IF(nettype == 3) THEN
         CALL NESTEDMOD(ini,modtot)
-!    write(6,*) modsize,'         nested '
-!        write(15,*) modsize,'nested module   '
     ELSE IF(nettype == 41) THEN
         CALL BINESTEDMOD(ini,modtot)
-!    write(6,*) modsize,'   bipartite nested','    sub-modules -->',nbi1,nbi2
-!        write(15,*) modsize,'bipartite module'
     ELSE IF(nettype == 42) THEN
         CALL BIRANDMOD(ini,modtot)
-!        write(6,*) modsize,'   bipartite random','    sub-modules -->',nbi1,nbi2
-!        write(15,*) modsize,'bipartite module'
     ELSE IF(nettype == 51) THEN
         CALL TRIMOD(ini,modtot,1)
-!        write(6,*) modsize,'         tri-trophic random,','    sub-modules -->',ntri1,ntri2,ntri3
-!        write(15,*) ntri1,'tri-trophic random module 1'
-!        write(15,*) ntri2,'tri-trophic random module 2'
-!        write(15,*) ntri3,'tri-trophic random module 3'
     ELSE IF(nettype == 52) THEN
         CALL TRIMOD(ini,modtot,2)
-!        write(6,*) modsize,'         tri-trophic bipartite,','    sub-modules -->',ntri1,ntri2,ntri3
-!        write(15,*) ntri1,'tri-trophic bipartite module 1'
-!        write(15,*) ntri2,'tri-trophic bipartite module 2'
-!        write(15,*) ntri3,'tri-trophic bipartite module 3'
     END IF
 end do
 
@@ -189,15 +154,19 @@ do k=1,modcount
         do j=i+1,modsize_sav(k)
             jj = j + ini
             if(a(ii,jj) == 1) then
-                CALL RANDOM_NUMBER(aux)
+                !! this one seems okay
+                aux = unifrnd()
+                !aux = unifrnd()
                 IF(aux < prewloc) THEN
                     a(ii,jj) = 0
                     a(jj,ii) = 0
-                    call RANDOM_NUMBER(aux)
+                    !! This one causes SEGFAULT when changed to unifrnd
+                    aux = unifrnd()
+                    !aux = unifrnd()
                     ijp = int(modsize_sav(k)*aux)+1
                     ijpp = ijp + ini
-                    call RANDOM_NUMBER(aux)
-                    if(aux < 0.5) then
+                    aux = unifrnd()
+                    if(aux < 0.5D0) then
                         a(ii,ijpp) = 1
                         a(ijpp,ii) = 1
                     else
@@ -215,14 +184,15 @@ end do
 do i=1,n
   do j=i+1,n
       if(a(i,j) == 1) then
-          CALL RANDOM_NUMBER(aux)
+          aux = unifrnd()
             IF(aux < prew) THEN
                 a(i,j) = 0
                 a(j,i) = 0
-                call RANDOM_NUMBER(aux)
+                !! SEGFAULT HERE if changed to unifrnd
+                aux = unifrnd()
                 ijp = int(n*aux)+1
-                call RANDOM_NUMBER(aux)
-                if(aux < 0.5) then
+                aux = unifrnd()
+                if(aux < 0.5D0) then
                     a(i,ijp) = 1
                     a(ijp,i) = 1
                 else
@@ -240,7 +210,8 @@ do i=1,n
   if(degree(i) == 0) then
     jp = i
     do while (jp == i)
-      CALL RANDOM_NUMBER(aux)
+     !! Segfault when changed
+      aux = unifrnd()
       jp = int(n*aux)+1
         a(i,jp) = 1
         a(jp,i) = 1
@@ -251,21 +222,11 @@ end do
 
 
 
-!write(6,*) '----------------------------------------- '
 ! average connectivity
 icon = SUM(a)
-!write(6,*) 'average degree =',icon/an
-!write(6,*) 'average module size =',an/float(modcount)
 
 call clusters(a,n,maxsize,nclusters)
-!write(6,*) 'number of components =',nclusters
-!write(6,*) 'size of largest component =',maxsize
 
-!write(15,*) ' '
-!write(15,*) 'average degree =',icon/an
-!write(15,*) 'average module size =',an/float(modcount)
-!write(15,*) 'number of components =',nclusters
-!write(15,*) 'size of largest component =',maxsize
 
 if (nclusters /= 1) then
 !    write(6,*)
@@ -284,33 +245,42 @@ do i=1,n
 end do
 
 DEALLOCATE(a,degree)
-!CLOSE(15)
 
+call rndend()
 
 end subroutine SubNetGen
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE RANDOMMOD(ini,modtot)
 USE globals
+double precision p
 iini = ini + 1
 ifin = modtot
 modsize = ifin - ini
-p = avk/float(modsize-1)
+p = avk/dble(modsize-1)
+
+call rndstart()
+
+
 do i=iini,ifin
   do j=i+1,ifin
-    CALL RANDOM_NUMBER(aux)
+    aux = unifrnd()
       if( aux < p) then
                 a(i,j) = 1
                 a(j,i) = 1
             end if
   end do
 end do
+
+call rndend()
+
 return
 end
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SFMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 INTEGER, ALLOCATABLE ::  co(:),sco(:),id(:),b(:,:)
 INTEGER sm
 modsize = modtot - ini
@@ -320,10 +290,15 @@ ALLOCATE (b(modsize,modsize))
 ALLOCATE (co(modsize),sco(modsize),id(m))
 ! generate initially fully connected cluster
 co=0; b=0;
-pinit = 1.0
+pinit = 1.0D0
+
+call rndstart()
+
+
+
 do i=1,m0-1
     do k=i+1,m0
-        call random_number(aux2)
+        aux2 = unifrnd()
         if(aux2 < pinit) then
             b(i,k) = 1
         end if
@@ -341,7 +316,7 @@ do l=m0,modsize-1
     end do
     k = 1
 3  do
-        call random_number(aux2)
+        aux2 = unifrnd()
         j = int(aux2*sco(l)) + 1  ! Random integer in [1, sum of all cone/ties]
         id(k:k) = minloc(abs(sco - j))
         if ( sco(id(k)) < j )  id(k) = id(k) + 1
@@ -355,7 +330,7 @@ do l=m0,modsize-1
 !--------------- Attachment -----------------
     do j=1,m
         i = id(j)
-        IF(aux2 < 0.5) THEN
+        IF(aux2 < 0.5D0) THEN
             i1=i;l1=l+1
         ELSE
             i1=l+1;l1=i
@@ -372,6 +347,9 @@ do i=1,modsize
     a(ini+i,ini+j) = b(i,j)
   end do
 end do
+
+call rndend()
+
 DEALLOCATE(b,co,sco,id)
 return
 end
@@ -379,9 +357,11 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE NESTEDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
+double precision alpha
 ifin = modtot
 modsize = ifin-ini
-alpha = log(1.0+1.0/avk)  ! populate module
+alpha = log(1.0D0+1.0D0/avk)  ! populate module
 do i=1,modsize
   n1 = int(modsize*exp(-alpha*(i-1)))
   do j=i+1,n1
@@ -396,15 +376,20 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BINESTEDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
+double precision eps, alpha
+
+call rndstart()
+
 modsize = modtot-ini
 nmod = 0
 DO while(nmod < submodcut)
-  CALL RANDOM_NUMBER(aux)   !split module in two similar blocks
-  eps = 0.5 + 0.2*(aux-0.5)
+  aux = unifrnd()   !split module in two similar blocks
+  eps = 0.5D0 + 0.2d0*(aux-0.5d0)
   nmod = int(eps*modsize)
   mmod = modsize - nmod
 END DO
-alpha = log(1.0+1.0/(avk-1.0))
+alpha = log(1.0d0+1.0d0/(avk-1.0d0))
 do i=1,nmod
   n1 = int(mmod*exp(-alpha*(i-1)))
   do j=1,n1
@@ -414,6 +399,9 @@ do i=1,nmod
 end do
 nbi1 = nmod
 nbi2 = mmod
+
+call rndend()
+
 return
 end
 
@@ -421,20 +409,25 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BIRANDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
+double precision eps, p
 modsize = modtot-ini
 nmod = 0
+
+call rndstart()
+
 DO while(nmod < submodcut)
-    CALL RANDOM_NUMBER(aux)   !split module in two similar blocks
-    eps = 0.5 + 0.2*(aux-0.5)
+    aux = unifrnd()   !split module in two similar blocks
+    eps = 0.5d0 + 0.2d0*(aux-0.5d0)
     nmod = int(eps*modsize)
     mmod = modsize - nmod
 END DO
 ini1 = ini + 1
 ifin1 = ini1 + nmod
-p = 2.0*avk/float(modsize-1)
+p = 2.0d0*avk/dble(modsize-1)
 do i=ini1,ifin1
     do j=ifin1+1,modtot
-        CALL RANDOM_NUMBER(aux)
+        aux = unifrnd()
         if( aux < p) then
             a(i,j) = 1
             a(j,i) = 1
@@ -443,6 +436,9 @@ do i=ini1,ifin1
 end do
 nbi1 = nmod
 nbi2 = mmod
+
+call rndend()
+
 return
 end
 
@@ -450,10 +446,15 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE TRIMOD(ini,modtot,nett)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
+double precision eps, aux
+
+call rndstart()
+
 modsize = modtot-ini
 ! define block sizes
-CALL RANDOM_NUMBER(aux)   !split network in two parts 2/3 + 1/3
-eps = 0.66 + 0.2*(aux-0.5)
+aux = unifrnd()   !split network in two parts 2/3 + 1/3
+eps = 0.66d0 + 0.2d0*(aux-0.5d0)
 imod = int(eps*modsize)
 kmod = modsize - imod
 ! first module is a bi-partite network with sizes nmod, mmod
@@ -467,27 +468,13 @@ IF(nett == 1) THEN
 ELSE IF(nett == 2) THEN
     CALL BINESTEDMOD(ini+nmod,modtot)
 END IF
+
+call rndend()
+
 return
 end
 
-!! not used.  also, INTEGER*4 raises note.
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!SUBROUTINE NUMBSTR(ID,NUMBER,STR)
-!CHARACTER*(*) STR
-!INTEGER*4 ID,NUMBER
-!CHARACTER*1 B
-!INTEGER*4 IA0,N,I,IT
-!IA0 = ICHAR('0')
-!N = NUMBER
-!DO I=1,ID
-!   J = ID + 1 - I
-!   IT = MOD(N,10)
-!   B = CHAR(IA0 + IT)
-!   STR(J:J) = B
-!   N = (N - IT)/10
-!END DO
-!RETURN
-!END
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE clusters(jj,nf,maxsize,icount)
@@ -527,40 +514,42 @@ END SUBROUTINE clusters
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 RECURSIVE SUBROUTINE findtree(jj,vm,n,nf,nvm)
-INTEGER, INTENT(IN) :: n
-INTEGER i,j,nvm(1),m
-INTEGER jj(nf,nf),v(nf),vm(nf+1)
-! find neighbors of node n
-CALL findneighbors (jj,n,nf,v,m)
-nvm(1:1) = minloc(vm) - 1
-loop1: DO i=1,m
-DO j=1,nvm(1)
-IF(v(i) == vm(j)) THEN
-CYCLE loop1
-END IF
-END DO
-IF(nvm(1)==nf) EXIT loop1
-nvm(1) = nvm(1) + 1
-vm(nvm(1)) = v(i)
-CALL findtree(jj,vm,v(i),nf,nvm)
-END DO loop1
-RETURN
+  INTEGER, INTENT(IN) :: n
+  INTEGER i,j,nvm(1),m
+  INTEGER jj(nf,nf),v(nf),vm(nf+1)
+  ! find neighbors of node n
+  CALL findneighbors (jj,n,nf,v,m)
+  nvm(1:1) = minloc(vm) - 1
+  loop1: DO i=1,m
+  DO j=1,nvm(1)
+  IF(v(i) == vm(j)) THEN
+  CYCLE loop1
+  END IF
+  END DO
+  IF(nvm(1)==nf) EXIT loop1
+  nvm(1) = nvm(1) + 1
+  vm(nvm(1)) = v(i)
+  CALL findtree(jj,vm,v(i),nf,nvm)
+  END DO loop1
+  RETURN
 END
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE findneighbors (jj,n,nf,v,m)
-INTEGER n,nf,i,m
-INTEGER jj(nf,nf),v(nf)
-m = 0
-DO i=1,nf
-IF(jj(n,i)==1) THEN   !find neighbors of node n
-m = m + 1         !add 1 to counter
-v(m) = i          !store neighbor
-END IF
-END DO
-RETURN
+  INTEGER n,nf,i,m
+  INTEGER jj(nf,nf),v(nf)
+  m = 0
+  DO i=1,nf
+    IF(jj(n,i)==1) THEN   !find neighbors of node n
+      m = m + 1         !add 1 to counter
+      v(m) = i          !store neighbor
+    END IF
+  END DO
+  RETURN
 END
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE init_random_seed()

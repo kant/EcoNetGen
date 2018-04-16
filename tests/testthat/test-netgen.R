@@ -1,5 +1,5 @@
 library(testthat)
-
+testthat::context("netgen")
 
 test_that("we can create a mixed type network", {
 n_modav <- c(150,30)
@@ -41,3 +41,17 @@ test_that("we can create all types of network", {
         expect_is(M, "igraph")
 
 })
+
+test_that("setting seed creates a reproducible network", {
+  set.seed(5555555)
+  M <- netgen()
+
+  set.seed(5555555)
+  M2 <- netgen()
+
+  expect_identical(igraph::as_adj(M), igraph::as_adj(M2))
+
+})
+
+
+

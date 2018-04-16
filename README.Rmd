@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  cache = TRUE
+  cache = FALSE
 )
 ```
 
@@ -39,6 +39,7 @@ This is a basic example which generates a network. See `?netgen` for documentati
 
 ```{r example}
 library(EcoNetGen)
+set.seed(123456) # for a reproducible simulation
 network <- netgen(n_modav = c(150, 20), # network size, ave module size
                   cutoffs = c(20, 5),   # module and submodule min sizes
                   net_type = 41,        # bi-partite nested
