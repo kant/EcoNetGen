@@ -77,6 +77,7 @@ END MODULE globalvar
 SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, &
                        size_n, module_sizes, n_modules, sampled_nodes, sampled_edges)
 USE globalvar
+IMPLICIT REAL*8(A-H,O-Z)
 integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
 integer sampled_nodes(*), sampled_edges(*)
 REAL*8 anorm, av_degree, auxw
@@ -123,7 +124,7 @@ do i=1,n
   do j=1,n
     a(i,j) = net_in(i + (j-1) * n)
     if(neigh_crit == 1) then
-        CALL RANDOM_NUMBER(aux)  ! assign weights to links
+        aux = unifrnd()  ! assign weights to links
         auxw = log(1.0D0/aux)      ! following exponential distribution
         w(i,j) = auxw
         w(j,i) = auxw
@@ -205,7 +206,7 @@ idx = 0
 ! try m times to select key nodes from the network and put nodes in v
 ! actual number of selected nodes is mm and may be smaller than m
 do k=1,m
-    CALL RANDOM_NUMBER(aux)
+    aux = unifrnd()
     ! sample according to criterion
     prob_aux = key_prob - aux
     js = minloc(prob_aux,MASK=prob_aux.GT.0.0)
@@ -247,7 +248,7 @@ do k=1,mm
     ! add neighbors randomly
     if(neigh_crit == 0) then
         do l=1,mkk
-            CALL RANDOM_NUMBER(aux)
+            aux = unifrnd()
             jsr = int(aux*mk) + 1          ! select random neighbor
             do ll=1,mnew
                 if(vk(jsr) == v(ll)) then  ! check if the neighbor has already been added
@@ -283,7 +284,7 @@ do k=1,mm
         anorm = vw(mk)
         vw = vw/anorm
         do l=1,mkk
-            CALL RANDOM_NUMBER(aux)
+            aux = unifrnd()
             vwaux = vw - aux
             js = minloc(vwaux,MASK=vwaux.GT.0.0)  ! select neighbor according to weight
             do ll=1,mnew
@@ -383,6 +384,7 @@ END SUBROUTINE subsampling
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SAMPLING_CRITERION(icrit)
 USE globalvar
+IMPLICIT REAL*8(A-H,O-Z)
 REAL*8 anorm, sigma, av, y
 REAL*8, ALLOCATABLE :: prob(:),prob_aux(:),x(:),rhoc(:)
 INTEGER :: js(1)
@@ -419,7 +421,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
                 prob(1+ijump) = 0.0
             else
                 IF(icrit > 0) THEN
-                    CALL RANDOM_NUMBER(aux)
+                    aux = unifrnd()
                     prob_aux = rhoc - aux
                     js = minloc(prob_aux,MASK=prob_aux.GT.0.0)
                     j = js(1)
@@ -448,7 +450,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             if(module_status(im) == 1) then
                 prob(1+ijump) = 0.0D0
             else
-                CALL RANDOM_NUMBER(aux)
+                aux = unifrnd()
                 prob(i+ijump) = log(1.0D0/aux)
                 key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
@@ -490,7 +492,7 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             if(module_status(im) == 1) then
                 prob(1+ijump) = 0.0D0
             else
-                CALL RANDOM_NUMBER(aux)
+                aux = unifrnd()
                 prob(1+ijump) = log(1.0D0/aux)/dble(modsize(im))
             end if
             if(im == 1) then
@@ -524,6 +526,7 @@ END SUBROUTINE SAMPLING_CRITERION
 ! generates a log-normal distribution with mean av and variace sigma
 ! rho(x) = 1/(sqrt(2*pi)*sigma*x) * exp( -(ln(x)-ln(av))^2/(2*sigma^2) )
 SUBROUTINE lognormal(np,av,sigma,x,rhoc)
+IMPLICIT REAL*8(A-H,O-Z)
 INTEGER np
 REAL*8  xmax, xstep, aux1, aux2, avlog, av, sigma, anorm
 REAL*8 rho(np),rhoc(0:np),x(0:np)
@@ -558,6 +561,7 @@ END SUBROUTINE lognormal
 ! y = (N/alpha)/(1+N/alpha) -> 1-y = 1/(1+N/alpha) -> S = alpha*ln(1+N/alpha)
 
 SUBROUTINE fisherlog(np,y,x,rhoc)
+IMPLICIT REAL*8(A-H,O-Z)
 REAL*8 xmax, xstep, aux1, y, anorm
 INTEGER np
 REAL*8 rho(np),rhoc(0:np),x(0:np)

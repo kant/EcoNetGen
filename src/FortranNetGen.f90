@@ -5,6 +5,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! module defining global variables
 MODULE globals
+  IMPLICIT REAL*8(A-H,O-Z)
   INTEGER, ALLOCATABLE, SAVE :: a(:,:)
   REAL*8, SAVE :: avk
   INTEGER, SAVE :: nmod,mmod,kmod,ntri1,ntri2,ntri3,nbi1,nbi2
@@ -15,6 +16,7 @@ END MODULE globals
 
 SUBROUTINE subnetgen(output,n_modav,cutoffs,nettype,avkk,rewindprobs,mod_probs, modulecount)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 INTEGER output(*)
 INTEGER modulecount(*)
 INTEGER, INTENT(IN), DIMENSION(2) :: n_modav
@@ -87,7 +89,7 @@ do while(modtot < n)
 
     !! This one seems OKAY
     aux = unifrnd()
-    !CALL RANDOM_NUMBER(aux)
+    !aux = unifrnd()
 
     modsize = int(modav*log(1.0D0/aux))
     if( modav == n) modsize = n         !if modsize = n build a single network
@@ -110,7 +112,7 @@ do while(modtot < n)
     IF(nettype == 0) THEN
         !! This one seems okay too
         aux = unifrnd()
-        !CALL RANDOM_NUMBER(aux)   !choose module type
+        !aux = unifrnd()   !choose module type
         IF(aux < pc1) THEN
             p = avk/dble(modsize-1)
             CALL RANDOMMOD(ini,modtot)
@@ -154,16 +156,16 @@ do k=1,modcount
             if(a(ii,jj) == 1) then
                 !! this one seems okay
                 aux = unifrnd()
-                !CALL RANDOM_NUMBER(aux)
+                !aux = unifrnd()
                 IF(aux < prewloc) THEN
                     a(ii,jj) = 0
                     a(jj,ii) = 0
                     !! This one causes SEGFAULT when changed to unifrnd
                     aux = unifrnd()
-                    !CALL RANDOM_NUMBER(aux)
+                    !aux = unifrnd()
                     ijp = int(modsize_sav(k)*aux)+1
                     ijpp = ijp + ini
-                    CALL RANDOM_NUMBER(aux)
+                    aux = unifrnd()
                     if(aux < 0.5D0) then
                         a(ii,ijpp) = 1
                         a(ijpp,ii) = 1
@@ -182,14 +184,14 @@ end do
 do i=1,n
   do j=i+1,n
       if(a(i,j) == 1) then
-          CALL RANDOM_NUMBER(aux)
+          aux = unifrnd()
             IF(aux < prew) THEN
                 a(i,j) = 0
                 a(j,i) = 0
                 !! SEGFAULT HERE if changed to unifrnd
-                CALL RANDOM_NUMBER(aux)
+                aux = unifrnd()
                 ijp = int(n*aux)+1
-                CALL RANDOM_NUMBER(aux)
+                aux = unifrnd()
                 if(aux < 0.5D0) then
                     a(i,ijp) = 1
                     a(ijp,i) = 1
@@ -209,7 +211,7 @@ do i=1,n
     jp = i
     do while (jp == i)
      !! Segfault when changed
-      CALL RANDOM_NUMBER(aux)
+      aux = unifrnd()
       jp = int(n*aux)+1
         a(i,jp) = 1
         a(jp,i) = 1
@@ -262,7 +264,7 @@ call rndstart()
 
 do i=iini,ifin
   do j=i+1,ifin
-    CALL RANDOM_NUMBER(aux)
+    aux = unifrnd()
       if( aux < p) then
                 a(i,j) = 1
                 a(j,i) = 1
@@ -278,6 +280,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SFMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 INTEGER, ALLOCATABLE ::  co(:),sco(:),id(:),b(:,:)
 INTEGER sm
 modsize = modtot - ini
@@ -295,7 +298,7 @@ call rndstart()
 
 do i=1,m0-1
     do k=i+1,m0
-        CALL RANDOM_NUMBER(aux2)
+        aux2 = unifrnd()
         if(aux2 < pinit) then
             b(i,k) = 1
         end if
@@ -313,7 +316,7 @@ do l=m0,modsize-1
     end do
     k = 1
 3  do
-        CALL RANDOM_NUMBER(aux2)
+        aux2 = unifrnd()
         j = int(aux2*sco(l)) + 1  ! Random integer in [1, sum of all cone/ties]
         id(k:k) = minloc(abs(sco - j))
         if ( sco(id(k)) < j )  id(k) = id(k) + 1
@@ -354,6 +357,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE NESTEDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 double precision alpha
 ifin = modtot
 modsize = ifin-ini
@@ -372,6 +376,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BINESTEDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 double precision eps, alpha
 
 call rndstart()
@@ -379,7 +384,7 @@ call rndstart()
 modsize = modtot-ini
 nmod = 0
 DO while(nmod < submodcut)
-  CALL RANDOM_NUMBER(aux)   !split module in two similar blocks
+  aux = unifrnd()   !split module in two similar blocks
   eps = 0.5D0 + 0.2d0*(aux-0.5d0)
   nmod = int(eps*modsize)
   mmod = modsize - nmod
@@ -404,6 +409,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BIRANDMOD(ini,modtot)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 double precision eps, p
 modsize = modtot-ini
 nmod = 0
@@ -411,7 +417,7 @@ nmod = 0
 call rndstart()
 
 DO while(nmod < submodcut)
-    CALL RANDOM_NUMBER(aux)   !split module in two similar blocks
+    aux = unifrnd()   !split module in two similar blocks
     eps = 0.5d0 + 0.2d0*(aux-0.5d0)
     nmod = int(eps*modsize)
     mmod = modsize - nmod
@@ -421,7 +427,7 @@ ifin1 = ini1 + nmod
 p = 2.0d0*avk/dble(modsize-1)
 do i=ini1,ifin1
     do j=ifin1+1,modtot
-        CALL RANDOM_NUMBER(aux)
+        aux = unifrnd()
         if( aux < p) then
             a(i,j) = 1
             a(j,i) = 1
@@ -440,13 +446,14 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE TRIMOD(ini,modtot,nett)
 USE globals
+IMPLICIT REAL*8(A-H,O-Z)
 double precision eps, aux
 
 call rndstart()
 
 modsize = modtot-ini
 ! define block sizes
-CALL RANDOM_NUMBER(aux)   !split network in two parts 2/3 + 1/3
+aux = unifrnd()   !split network in two parts 2/3 + 1/3
 eps = 0.66d0 + 0.2d0*(aux-0.5d0)
 imod = int(eps*modsize)
 kmod = modsize - imod
