@@ -16,13 +16,34 @@ testthat::test_that("net sample works with other settings", {
   network_in <- netgen()
   sn <- netsample(network_in,
                   module_sizes = NULL,
-                  crit = c(1,1),
-                  key_nodes = c(10, 50, 10, 1000),
-                  anfn = 0.5,
-                  numb_hidden = 0,
-                  hidden_modules = c(1,5,6,0,0,0,0,0,0,0))
+                  crit = c(1,1))
+  testthat::expect_is(sn, "igraph")
+  sn <- netsample(network_in,
+                  anfn = 3)
+  testthat::expect_is(sn, "igraph")
+  ## sample by fisher log
+  sn <- netsample(network_in,
+                  module_sizes = NULL,
+                  crit = c(2,0))
   testthat::expect_is(sn, "igraph")
 
+  ## sampel by exp
+  sn <- netsample(network_in,
+                  module_sizes = NULL,
+                  crit = c(3,0))
+  testthat::expect_is(sn, "igraph")
+
+  ## sample by degree
+  sn <- netsample(network_in,
+                  module_sizes = NULL,
+                  crit = c(4,0))
+  testthat::expect_is(sn, "igraph")
+
+  ## sample by module
+  sn <- netsample(network_in,
+                  module_sizes = NULL,
+                  crit = c(5,0))
+  testthat::expect_is(sn, "igraph")
 
 })
 
