@@ -2,7 +2,7 @@
 
 export(adj_plot)
 export(netgen)
-export(netsample)
+export(netsampler)
 importFrom(ggplot2,aes_string)
 importFrom(ggplot2,element_blank)
 importFrom(ggplot2,geom_raster)
