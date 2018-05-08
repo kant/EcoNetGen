@@ -6,7 +6,7 @@
 \usage{
 netgen_v1(n_modav = c(50, 10), cutoffs = c(3, 0), net_type = 1,
   net_degree = 10, net_rewire = c(0.3, 0), mod_probs = 0,
-  verbose = TRUE)
+  verbose = FALSE)
 }
 \arguments{
 \item{n_modav}{network size and average module size (integer vector, length 2)}
