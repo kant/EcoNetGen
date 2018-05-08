@@ -93,7 +93,8 @@ plot(network, vertex.size= 0, vertex.label=NA,
 ## Sample from a network
 
 ``` r
-subnet <- netsampler(network, 
+set.seed(123456) # for a reproducible random sampling
+sampled <- netsampler(network, 
                      key_nodes_sampler = "degree", 
                      neighbors_sampler = "random",
                      n_key_nodes = 50,
@@ -109,9 +110,9 @@ adding a title and changing the color theme here.
 ``` r
 library(ggplot2) # needed to modify plot
 
-adj_plot(subnet) + 
+adj_plot(sampled) + 
   ggtitle("Adjacency matrix of sampled vs full network") + 
-  ggthemes::scale_fill_ptol()
+  scale_fill_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
 ![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
@@ -124,10 +125,12 @@ edges):
 
 ``` r
 library(ggraph)
-ggraph(subnet, layout = 'kk') +
+ggraph(sampled, layout = 'kk') +
         geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
         geom_node_point(aes(colour = label)) +
-        theme_graph() 
+        theme_graph() + 
+        scale_color_manual(values = c("#ED4E33", "#3B7EA1")) + 
+        scale_edge_color_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
 ![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
@@ -147,15 +150,43 @@ length(groups(community))
 We can check the size of each module as well:
 
 ``` r
-module_sizes <- sapply(groups(community), length)
+module_sizes <- sizes(community)
 module_sizes
+#> Community sizes
 #>  1  2  3  4  5  6 
 #> 21 23 21 22 44 19
-mean(module_sizes)
-#> [1] 25
 ```
+
+Average degree:
 
 ``` r
 mean(degree(as.undirected(network)))
 #> [1] 7.12
 ```
+
+We can also label and plot the clusters using a circular layout:
+
+``` r
+V(sampled)$module <- as.character(membership(community))
+
+ggraph(sampled, layout = 'circle') +
+  geom_edge_link(alpha=0.1) +
+  geom_node_point(aes(colour = module)) +
+  theme_graph()
+```
+
+![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
+
+Extract and plot just the sampled network:
+
+``` r
+subnet <- subgraph.edges(sampled, 
+                         E(sampled)[label=="sampled"])
+
+ggraph(subnet, layout = 'graphopt') +
+        geom_edge_link(alpha=0.4) +
+        geom_node_point() +
+        theme_graph() 
+```
+
+![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->

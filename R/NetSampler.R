@@ -32,7 +32,7 @@
 #'
 #' @export
 #' @importFrom igraph cluster_edge_betweenness as.undirected groups as_adjacency_matrix
-#' delete_edge_attr E
+#' delete_edge_attr E sizes
 #'
 #' @examples
 #' net <- netgen()
@@ -90,8 +90,7 @@ netsampler <-
     if(is.null(module_sizes)){
       community <- igraph::cluster_edge_betweenness(
         igraph::as.undirected(network_in))
-      module_sizes <- vapply(igraph::groups(community),
-                             length, integer(1))
+      module_sizes <- igraph::sizes(community)
     }
 
     ## Convert igraph to integer vector

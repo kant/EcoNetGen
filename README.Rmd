@@ -86,7 +86,8 @@ plot(network, vertex.size= 0, vertex.label=NA,
 ## Sample from a network
 
 ```{r}
-subnet <- netsampler(network, 
+set.seed(123456) # for a reproducible random sampling
+sampled <- netsampler(network, 
                      key_nodes_sampler = "degree", 
                      neighbors_sampler = "random",
                      n_key_nodes = 50,
@@ -99,9 +100,9 @@ We can plot the adjacency network, coloring red the sampled nodes.  Note that `a
 ```{r message=FALSE}
 library(ggplot2) # needed to modify plot
 
-adj_plot(subnet) + 
+adj_plot(sampled) + 
   ggtitle("Adjacency matrix of sampled vs full network") + 
-  ggthemes::scale_fill_ptol()
+  scale_fill_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
 
@@ -109,10 +110,12 @@ Don't forget to check out the `ggraph` package, which isn't required for `EcoNet
 
 ```{r message=FALSE, warning=FALSE}
 library(ggraph)
-ggraph(subnet, layout = 'kk') +
+ggraph(sampled, layout = 'kk') +
         geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
         geom_node_point(aes(colour = label)) +
-        theme_graph() 
+        theme_graph() + 
+        scale_color_manual(values = c("#ED4E33", "#3B7EA1")) + 
+        scale_edge_color_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
 
@@ -130,12 +133,51 @@ length(groups(community))
 We can check the size of each module as well:
 
 ```{r}
-module_sizes <- sapply(groups(community), length)
+module_sizes <- sizes(community)
 module_sizes
-mean(module_sizes)
 ```
 
+Average degree:
 
 ```{r}
 mean(degree(as.undirected(network)))
 ```
+
+
+We can also label and plot the clusters using a circular layout:
+
+```{r}
+V(sampled)$module <- as.character(membership(community))
+
+ggraph(sampled, layout = 'circle') +
+  geom_edge_link(alpha=0.1) +
+  geom_node_point(aes(colour = module)) +
+  theme_graph()
+
+```
+
+
+
+
+```{r include=FALSE, eval=FALSE}
+## alternate tidygraph way
+library(tidygraph)
+as_tbl_graph(sampled, directed = FALSE) %>%
+  activate(edges) %>% 
+  mutate(module = cluster_edge_betweenness())
+
+```
+
+
+Extract and plot just the sampled network:
+
+```{r}
+subnet <- subgraph.edges(sampled, 
+                         E(sampled)[label=="sampled"])
+
+ggraph(subnet, layout = 'graphopt') +
+        geom_edge_link(alpha=0.4) +
+        geom_node_point() +
+        theme_graph() 
+```
+
