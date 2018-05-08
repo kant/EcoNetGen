@@ -1,6 +1,7 @@
 testthat::context("netsampler")
 
 testthat::test_that("we can run netsample",{
+  skip_if(grepl("i386", Sys.info()[["machine"]]))
 
   library(EcoNetGen)
   net <- netgen()
@@ -15,6 +16,7 @@ testthat::test_that("we can run netsample",{
 
 testthat::test_that("net sample works with other settings", {
 
+  skip_if(grepl("i386", Sys.info()[["machine"]]))
   network_in <- netgen()
   sn <- netsampler(network_in,
                  key_nodes_sampler = "lognormal",

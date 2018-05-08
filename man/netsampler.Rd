@@ -50,10 +50,10 @@ same network to avoid unnecessary performance hit from recalculating modules eve
 time.  See examples.
 }
 \examples{
+\donttest{
 net <- netgen()
 sample <- netsampler(net)
 
-\donttest{
 ## Precompute `module_sizes` for replicate sampling of the same network:
  library(igraph)
  modules <- cluster_edge_betweenness(as.undirected(network_in))
