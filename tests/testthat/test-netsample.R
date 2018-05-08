@@ -1,7 +1,6 @@
 testthat::context("netsampler")
 
 testthat::test_that("we can run netsample", {
-
   skip_if(grepl("i386", Sys.info()[["machine"]]))
 
   library(EcoNetGen)
@@ -16,8 +15,8 @@ testthat::test_that("we can run netsample", {
 
 
 testthat::test_that("net sample works with other settings", {
-
   skip_if(grepl("i386", Sys.info()[["machine"]]))
+
   network_in <- netgen()
   sn <- netsampler(network_in,
                  key_nodes_sampler = "lognormal",
@@ -46,6 +45,8 @@ testthat::test_that("net sample works with other settings", {
 })
 
 testthat::test_that("we can run netsample",{
+  skip_if(grepl("i386", Sys.info()[["machine"]]))
+
       library(EcoNetGen)
       library(igraph)
 
@@ -59,29 +60,6 @@ testthat::test_that("we can run netsample",{
       testthat::expect_is(sampled, "igraph")
 
 
-
-
-  #    ## if treat both sampled (2s) and unsampled (1s) edges as 1s...
-  #    tmp <- as.integer(res$edges_sampled > 0)
-  #    ## then input should be same as output network
-  #    testthat::expect_identical(res$input, tmp)
-
-
-  #    ## Test that sampled network and subset network match:
-  #    int_to_igraph <- function(x, ...){
-  #      M <- matrix(x, sqrt(length(x)))
-  #      igraph::graph_from_adjacency_matrix(M, ...)
-  #    }
-  #    s <- int_to_igraph(res$out)
-  #    fortran_sampled <- subgraph.edges(s, E(s))
-
-## How do we compare these? Ideally something stricted than this, but oh well:
-   #   testthat::expect_equal(length(igraph::E(fortran_sampled)),
-   #                           length(igraph::E(sampled)))
-
-      ## Visual inspection with ggraph:
-      # ggraph(sampled,layout = "kk") + geom_edge_link()
-      # ggraph(fortran_sampled,layout = "kk") + geom_edge_link()
 
 })
 
