@@ -77,10 +77,11 @@ netgen <- function(net_size = 50,
                      "br" = 42,
                      "tt-bn-r" = 51,
                      "tt-bn-bn" = 52)
-  n_modav = c(net_size, ave_module_size)
-  cutoffs = c(min_module_size, min_submod_size)
+  n_modav <- c(net_size, ave_module_size)
+  cutoffs <- c(min_module_size, min_submod_size)
 
-  netgen_v1(n_modav, cutoffs, net_type, ave_degree, rewire_probs, mod_probs, verbose)
+  netgen_v1(n_modav, cutoffs, net_type, ave_degree,
+            rewire_probs, mod_probs, verbose)
 
 }
 

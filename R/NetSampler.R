@@ -68,7 +68,7 @@ netsampler <-
     )
 
     #initial, final, delta,  final & delta not used.
-    key_nodes = c(n_key_nodes, 0, 0, 0)
+    key_nodes <- c(n_key_nodes, 0, 0, 0)
 
     if(is.integer(n_neighbors)){
       if(n_neighbors == 1L)

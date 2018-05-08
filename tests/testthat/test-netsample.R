@@ -72,7 +72,7 @@ testthat::test_that("we can run netsample",{
   #    s <- int_to_igraph(res$out)
   #    fortran_sampled <- subgraph.edges(s, E(s))
 
-      ## How do we compare these? Ideally something stricted than this, but oh well:
+## How do we compare these? Ideally something stricted than this, but oh well:
    #   testthat::expect_equal(length(igraph::E(fortran_sampled)),
    #                           length(igraph::E(sampled)))
 
