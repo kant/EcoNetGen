@@ -1,6 +1,7 @@
 testthat::context("netsampler")
 
-testthat::test_that("we can run netsample",{
+testthat::test_that("we can run netsample", {
+
   skip_if(grepl("i386", Sys.info()[["machine"]]))
 
   library(EcoNetGen)

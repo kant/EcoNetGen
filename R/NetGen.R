@@ -37,6 +37,7 @@
 #' @export
 #' @useDynLib EcoNetGen, .registration = TRUE
 #' @examples
+#' library(EcoNetGen)
 #' \donttest{
 #' net <- netgen()
 #' adj_plot(net)
