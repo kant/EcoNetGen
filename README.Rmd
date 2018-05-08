@@ -23,14 +23,25 @@ knitr::opts_chunk$set(
 )
 ```
 
+`EcoNetGen` lets you randomly generate a wide range of interaction networks with
+specified size, average degree, modularity, and topological
+structure. You can also sample nodes and links from within simulated networks
+randomly, by degree, by module, or by abundance. Simulations
+and sampling routines are implemented in 'FORTRAN', providing
+efficient generation times even for large networks. Basic
+visualization methods also included. Algorithms implemented
+here are described in de Aguiar et al. (2017) [arXiv:1708.01242](https://arxiv.org/abs/1708.01242).
 
 
 ## Installation
 
-`EcoNetGen` is now on CRAN and can be installed in the usual way; `install.packages("EcoNetGen")`.
+`EcoNetGen` is now on CRAN and can be installed in the usual way: 
 
+```r
+install.packages("EcoNetGen")`
+```
 
-You can install the development version of `EcoNetGen` from GitHub with:
+See [NEWS](NEWS.md) for a list of the most recent changes to the development version and current CRAN release.  You can install the current development version of `EcoNetGen` from GitHub with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
@@ -41,16 +52,20 @@ This way requires you have a recent FORTRAN compiler avialble on your machine.
 
 ## Generate random networks
 
-This is a basic example which generates a network. See `?netgen` for documentation describing the parameter arguments.  
+This is a basic example which generates a network. See `?netgen` for documentation describing the parameter arguments.  Setting `verbose = FALSE` (default) surpresses the output summary message.
 
 ```{r example}
 library(EcoNetGen)
 set.seed(123456) # for a reproducible simulation
-network <- netgen(n_modav = c(150, 20), # network size, ave module size
-                  cutoffs = c(20, 5),   # module and submodule min sizes
-                  net_type = 41,        # bi-partite nested
-                  net_degree = 10,      # average degree of connection
-                  net_rewire = c(0.07,0.2)) # rewire probabilities
+
+network <- netgen(net_size = 150,
+                  ave_module_size = 20, 
+                  min_module_size = 20,
+                  min_submod_size = 5,
+                  net_type = "bi-partite nested",
+                  ave_degree = 10,
+                  verbose = TRUE
+                  ) 
 ```
 
 We can plot the resulting `igraph` as an adjacency matrix:
@@ -61,7 +76,7 @@ adj_plot(network)
 
 Network `igraph` objects can also be plotted using the standard `igraph` plotting routines, for example:
 
-```{r}
+```{r message=FALSE}
 library(igraph)
 plot(network, vertex.size= 0, vertex.label=NA, 
      edge.color = rgb(.22,0,1,.02), vertex.shape="none", 
@@ -71,31 +86,33 @@ plot(network, vertex.size= 0, vertex.label=NA,
 ## Sample from a network
 
 ```{r}
-subnet <- netsample(network,
-                 crit = c(4,0), # Sample key nodes by degree, neighbors randomly
-                 key_nodes = c(50, 50, 10, 1000),
-                 anfn = 0.5, # samples 50% of neighbors
-                 numb_hidden = 0,
-                 hidden_modules = c(0,0,0,0,0,0,0,0,0,0)
-                 )
+subnet <- netsampler(network, 
+                     key_nodes_sampler = "degree", 
+                     neighbors_sampler = "random",
+                     n_key_nodes = 50,
+                     n_neighbors = 0.5 # 50%
+                    )
 ```
 
-We can plot the adjacency network, coloring red the sampled nodes.  Note that `adj_plot` objects are just `ggplot` graphs (`geom_raster`) under the hood, and can be modified with the usual `ggplot` arguments, such as adding a title here. 
+We can plot the adjacency network, coloring red the sampled nodes.  Note that `adj_plot` objects are just `ggplot` graphs (`geom_raster`) under the hood, and can be modified with the usual `ggplot` arguments, such as adding a title and changing the color theme here. 
 
-```{r}
-library(ggplot2)
-adj_plot(subnet) + ggtitle("Adjacency matrix of sampled vs full network")
+```{r message=FALSE}
+library(ggplot2) # needed to modify plot
+
+adj_plot(subnet) + 
+  ggtitle("Adjacency matrix of sampled vs full network") + 
+  ggthemes::scale_fill_ptol()
 ```
 
 
 Don't forget to check out the `ggraph` package, which isn't required for `EcoNetGen` but provides a lot of additional great ways to plot your network.  Here we plot the simulated network color-coding the sampled nodes and edges (indicated by the label "sampled" on vertices and edges):
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(ggraph)
 ggraph(subnet, layout = 'kk') +
         geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
         geom_node_point(aes(colour = label)) +
-        theme_graph()
+        theme_graph() 
 ```
 
 

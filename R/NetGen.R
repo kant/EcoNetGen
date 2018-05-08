@@ -3,12 +3,12 @@
 #' Randomly generate a wide range of interaction networks
 #'
 #' @param net_size network size (number of nodes)
-#' @param average_module average module size
-#' @param min_module cutoff for the minimum modules size
-#' @param min_submodule cutoff for submodules, used only for bipartite and tripartite networks
+#' @param ave_module_size average module size
+#' @param min_module_size cutoff for the minimum modules size
+#' @param min_submod_size cutoff for submodules, used only for bipartite and tripartite networks
 #' @param net_type network type, see details
-#' @param net_degree average degree of connection
-#' @param net_rewire global and local  network rewiring probabilities
+#' @param ave_degree average degree of connection
+#' @param rewire_probs global and local  network rewiring probabilities
 #' @param mod_probs module probabilities for first 7 types,
 #'   used for constructing mixed networks
 #' @param verbose logical, default TRUE. Should a message report summary statistics?
@@ -20,8 +20,8 @@
 #' - nested
 #' - bi-partite nested
 #' - bi-partite random
-#' - "ttbnr": tri-trophic bipartite nested-random
-#' - "ttbnbn": tri-trophic bipartite nested-bipartite nested
+#' - tri-trophic bipartite nested-random. (Can use short-hand "ttbnr")
+#' - tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 #'
 #'  NOTE: Function arguments have changed from those netgen 0.1.1 to be more intelligible.
 #'  To restore the original function api on code that depends on the old version, you
@@ -42,22 +42,26 @@
 #' adj_plot(net)
 #' }
 netgen <- function(net_size = 50,
-                   average_module = 10,
-                   min_module = 0,
-                   min_submodule = 0,
+                   ave_module_size = 10,
+                   min_module_size = 0,
+                   min_submod_size = 0,
                    net_type = c("mixed",
                                 "random",
                                 "scalefree",
                                 "nested",
                                 "bi-partite nested",
                                 "bi-partite random",
+                                "tri-trophic bipartite nested-random",
+                                "tri-trophic bipartite nested-bipartite nested",
+                                "bn",
+                                "br",
                                 "tt-bn-r",
                                 "tt-bn-bn"
                                 ),
-                   net_degree = 10,
-                   net_rewire = c(0.3,0.0),
+                   ave_degree = 10,
+                   rewire_probs = c(0.3,0.0),
                    mod_probs = 0,
-                   verbose = TRUE){
+                   verbose = FALSE){
 
   net_type <- match.arg(net_type)
   net_type <- switch(net_type,
@@ -67,12 +71,16 @@ netgen <- function(net_size = 50,
                      "nested" = 3,
                      "bi-partite nested" = 41,
                      "bi-partite random" = 42,
+                     "tri-trophic bipartite nested-random" = 51,
+                     "tri-trophic bipartite nested-bipartite nested" = 52,
+                     "bn" = 41,
+                     "br" = 42,
                      "tt-bn-r" = 51,
                      "tt-bn-bn" = 52)
-  n_modav = c(net_size, average_module)
-  cutoffs = c(min_module, min_submodule)
+  n_modav = c(net_size, ave_module_size)
+  cutoffs = c(min_module_size, min_submod_size)
 
-  netgen_v1(n_modav, cutoffs, net_type, net_degree, net_rewire, mod_probs)
+  netgen_v1(n_modav, cutoffs, net_type, ave_degree, rewire_probs, mod_probs, verbose)
 
 }
 
@@ -112,7 +120,7 @@ netgen_v1 <-
            net_degree = 10,
            net_rewire = c(0.3,0.0),
            mod_probs = 0,
-           verbose = TRUE) {
+           verbose = FALSE) {
     res <- .Fortran(
       "subnetgen",
       output = integer(n_modav[1]^2),

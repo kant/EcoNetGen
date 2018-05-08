@@ -4,26 +4,28 @@
 \alias{netgen}
 \title{netgen}
 \usage{
-netgen(net_size = 50, average_module = 10, min_module = 0,
-  min_submodule = 0, net_type = c("mixed", "random", "scalefree", "nested",
-  "bi-partite nested", "bi-partite random", "tt-bn-r", "tt-bn-bn"),
-  net_degree = 10, net_rewire = c(0.3, 0), mod_probs = 0,
+netgen(net_size = 50, ave_module_size = 10, min_module_size = 0,
+  min_submod_size = 0, net_type = c("mixed", "random", "scalefree",
+  "nested", "bi-partite nested", "bi-partite random",
+  "tri-trophic bipartite nested-random",
+  "tri-trophic bipartite nested-bipartite nested", "bn", "br", "tt-bn-r",
+  "tt-bn-bn"), ave_degree = 10, rewire_probs = c(0.3, 0), mod_probs = 0,
   verbose = TRUE)
 }
 \arguments{
 \item{net_size}{network size (number of nodes)}
 
-\item{average_module}{average module size}
+\item{ave_module_size}{average module size}
 
-\item{min_module}{cutoff for the minimum modules size}
+\item{min_module_size}{cutoff for the minimum modules size}
 
-\item{min_submodule}{cutoff for submodules, used only for bipartite and tripartite networks}
+\item{min_submod_size}{cutoff for submodules, used only for bipartite and tripartite networks}
 
 \item{net_type}{network type, see details}
 
-\item{net_degree}{average degree of connection}
+\item{ave_degree}{average degree of connection}
 
-\item{net_rewire}{global and local  network rewiring probabilities}
+\item{rewire_probs}{global and local  network rewiring probabilities}
 
 \item{mod_probs}{module probabilities for first 7 types,
 used for constructing mixed networks}
@@ -45,8 +47,8 @@ network type is one of
 \item nested
 \item bi-partite nested
 \item bi-partite random
-\item "ttbnr": tri-trophic bipartite nested-random
-\item "ttbnbn": tri-trophic bipartite nested-bipartite nested
+\item tri-trophic bipartite nested-random. (Can use short-hand "ttbnr")
+\item tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 }
 
 NOTE: Function arguments have changed from those netgen 0.1.1 to be more intelligible.
