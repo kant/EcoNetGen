@@ -13,7 +13,9 @@ adj_plot(graph)
 Plot network adjacency matrix
 }
 \examples{
+\donttest{
 graph <- netgen()
 adj_plot(graph)
+}
 
 }

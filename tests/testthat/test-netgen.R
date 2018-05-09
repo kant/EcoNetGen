@@ -3,7 +3,7 @@ testthat::context("netgen")
 
 
 test_that("we can create a random type network", {
-  skip_if(R.Version()$arch == "i386")
+  #skip_if(R.Version()$arch == "i386")
 
   net <- netgen()
   expect_is(net, "igraph")
