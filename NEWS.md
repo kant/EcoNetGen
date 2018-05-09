@@ -1,6 +1,11 @@
 # NetGen 0.2.0
 
-* Add `netsample()` routine
+* Add `netsampler()` routine
+
+* Modify user interface for `netgen()` to provide more self-explanatory argument names. Note: the 
+  old behaviour can be recovered for previous scripts you don't want to update manually by doing 
+  `netgen <- EcoNetGen:::netgen_v1` after loading `EcoNetGen`.
+  
 * Ensure that FORTRAN correctly obeys `set.seed()` by always using the R random number generator. [#6](https://github.com/cboettig/EcoNetGen/issues/6)
 
 # NetGen 0.1.1 2018-04-10
