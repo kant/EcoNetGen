@@ -3,7 +3,7 @@ testthat::context("netgen")
 
 
 test_that("we can create a random type network", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
   net <- netgen()
   expect_is(net, "igraph")
@@ -11,7 +11,7 @@ test_that("we can create a random type network", {
 })
 
 test_that("we can create a mixed type network", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
   n_modav <- c(150,30)
   cutoffs <- c(15,5)
@@ -30,7 +30,7 @@ test_that("we can create a mixed type network", {
 
 
 test_that("we can create all types of network", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
         n_modav <- c(150,20)
         cutoffs <- c(15,5)
@@ -57,7 +57,7 @@ test_that("we can create all types of network", {
 })
 
 test_that("setting seed creates a reproducible network", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
   set.seed(5555555)
   M <- netgen()

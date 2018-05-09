@@ -1,7 +1,7 @@
 testthat::context("netsampler")
 
 testthat::test_that("we can run netsample", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
   library(EcoNetGen)
   net <- netgen()
@@ -15,7 +15,7 @@ testthat::test_that("we can run netsample", {
 
 
 testthat::test_that("net sample works with other settings", {
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
   network_in <- netgen()
   sn <- netsampler(network_in,
@@ -45,7 +45,7 @@ testthat::test_that("net sample works with other settings", {
 })
 
 testthat::test_that("we can run netsample",{
-  skip_if(grepl("i386", Sys.info()[["machine"]]))
+  skip_if(R.Version()$arch == "i386")
 
       library(EcoNetGen)
       library(igraph)
