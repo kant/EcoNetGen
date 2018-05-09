@@ -50,7 +50,7 @@ netgen <- function(net_size = 50,
                                 "random",
                                 "scalefree",
                                 "nested",
-#                                "bi-partite-nested",
+#                                "bi-partite nested",
 #                                "bi-partite random",
 #                                "tri-trophic bipartite nested-random",
 #                                "tri-trophic bipartite nested-bipartite nested",
@@ -77,7 +77,11 @@ netgen <- function(net_size = 50,
                      "bn" = 41,
                      "br" = 42,
                      "tt-bn-r" = 51,
-                     "tt-bn-bn" = 52)
+                     "tt-bn-bn" = 52,
+                     404)
+  if(net_type == 404){
+    stop("net_type not found")
+  }
   n_modav <- c(net_size, ave_module_size)
   cutoffs <- c(min_module_size, min_submod_size)
 
