@@ -5,9 +5,9 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! module defining global variables
 MODULE globals
-  IMPLICIT REAL*8(A-H,O-Z)
+  IMPLICIT double precision(A-H,O-Z)
   INTEGER, ALLOCATABLE, SAVE :: a(:,:)
-  REAL*8, SAVE :: avk
+  double precision, SAVE :: avk
   INTEGER, SAVE :: nmod,mmod,kmod,ntri1,ntri2,ntri3,nbi1,nbi2
   INTEGER, SAVE :: submodcut
 END MODULE globals
@@ -16,15 +16,15 @@ END MODULE globals
 
 SUBROUTINE subnetgen(output,n_modav,cutoffs,nettype,avkk,rewindprobs,mod_probs, modulecount)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 INTEGER output(*)
 INTEGER modulecount(*)
 INTEGER, INTENT(IN), DIMENSION(2) :: n_modav
 INTEGER, INTENT(IN), DIMENSION(2) :: cutoffs
 INTEGER, INTENT(IN) :: nettype
-REAL*8, INTENT(IN) :: avkk
-REAL*8, INTENT(IN), DIMENSION(2) :: rewindprobs
-REAL*8, INTENT(IN), DIMENSION(7) :: mod_probs
+double precision, INTENT(IN) :: avkk
+double precision, INTENT(IN), DIMENSION(2) :: rewindprobs
+double precision, INTENT(IN), DIMENSION(7) :: mod_probs
 INTEGER, ALLOCATABLE :: degree(:)
 INTEGER, DIMENSION(200) :: modsize_sav
 CHARACTER*20 namenet
@@ -280,7 +280,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SFMOD(ini,modtot)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 INTEGER, ALLOCATABLE ::  co(:),sco(:),id(:),b(:,:)
 INTEGER sm
 modsize = modtot - ini
@@ -357,7 +357,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE NESTEDMOD(ini,modtot)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 double precision alpha
 ifin = modtot
 modsize = ifin-ini
@@ -376,7 +376,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BINESTEDMOD(ini,modtot)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 double precision eps, alpha
 
 call rndstart()
@@ -409,7 +409,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE BIRANDMOD(ini,modtot)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 double precision eps, p
 modsize = modtot-ini
 nmod = 0
@@ -446,7 +446,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE TRIMOD(ini,modtot,nett)
 USE globals
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 double precision eps, aux
 
 call rndstart()

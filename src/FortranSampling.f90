@@ -65,7 +65,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! module defining global variables
 MODULE globalvar
-REAL*8, ALLOCATABLE, SAVE :: key_prob(:)
+double precision, ALLOCATABLE, SAVE :: key_prob(:)
 INTEGER, ALLOCATABLE, SAVE :: a(:,:),jj(:,:)
 INTEGER, ALLOCATABLE, SAVE :: a_aux(:,:)
 INTEGER, ALLOCATABLE, SAVE :: module_status(:),modsize(:),idx(:)
@@ -77,19 +77,19 @@ END MODULE globalvar
 SUBROUTINE subsampling(net_in,net_out,crit,key_nodes,anfn,numb_hidden,hidden_modules, &
                        size_n, module_sizes, n_modules, sampled_nodes, sampled_edges)
 USE globalvar
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 integer net_in(*), net_out(*), size_n(*), module_sizes(*), n_modules(*)
 integer sampled_nodes(*), sampled_edges(*)
-REAL*8 anorm, av_degree, auxw
+double precision anorm, av_degree, auxw
 INTEGER, INTENT(IN), DIMENSION(2) :: crit
 INTEGER, INTENT(IN) :: key_nodes
 INTEGER, INTENT(IN) :: numb_hidden
 INTEGER, INTENT(IN) :: hidden_modules(10)
-REAL*8, INTENT(IN) :: anfn
+double precision, INTENT(IN) :: anfn
 INTEGER, ALLOCATABLE :: v(:)
 INTEGER, ALLOCATABLE :: vk(:),row(:),col(:)
 INTEGER, ALLOCATABLE :: degori(:),degsamp(:)
-REAL*8, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
+double precision, ALLOCATABLE :: w(:,:),vw(:),vwaux(:),prob_aux(:)
 INTEGER :: js(1),hidden,hiddentot
 INTEGER mm
 mm = 1
@@ -384,9 +384,9 @@ END SUBROUTINE subsampling
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SUBROUTINE SAMPLING_CRITERION(icrit)
 USE globalvar
-IMPLICIT REAL*8(A-H,O-Z)
-REAL*8 anorm, sigma, av, y
-REAL*8, ALLOCATABLE :: prob(:),prob_aux(:),x(:),rhoc(:)
+IMPLICIT double precision(A-H,O-Z)
+double precision anorm, sigma, av, y
+double precision, ALLOCATABLE :: prob(:),prob_aux(:),x(:),rhoc(:)
 INTEGER :: js(1)
 ALLOCATE (prob(n))
 
@@ -526,10 +526,10 @@ END SUBROUTINE SAMPLING_CRITERION
 ! generates a log-normal distribution with mean av and variace sigma
 ! rho(x) = 1/(sqrt(2*pi)*sigma*x) * exp( -(ln(x)-ln(av))^2/(2*sigma^2) )
 SUBROUTINE lognormal(np,av,sigma,x,rhoc)
-IMPLICIT REAL*8(A-H,O-Z)
+IMPLICIT double precision(A-H,O-Z)
 INTEGER np
-REAL*8  xmax, xstep, aux1, aux2, avlog, av, sigma, anorm
-REAL*8 rho(np),rhoc(0:np),x(0:np)
+double precision  xmax, xstep, aux1, aux2, avlog, av, sigma, anorm
+double precision rho(np),rhoc(0:np),x(0:np)
 xmax =  av + 5.0D0 * sigma
 xstep = xmax/dble(np)
 x = 0.0D0
@@ -561,10 +561,10 @@ END SUBROUTINE lognormal
 ! y = (N/alpha)/(1+N/alpha) -> 1-y = 1/(1+N/alpha) -> S = alpha*ln(1+N/alpha)
 
 SUBROUTINE fisherlog(np,y,x,rhoc)
-IMPLICIT REAL*8(A-H,O-Z)
-REAL*8 xmax, xstep, aux1, y, anorm
+IMPLICIT double precision(A-H,O-Z)
+double precision xmax, xstep, aux1, y, anorm
 INTEGER np
-REAL*8 rho(np),rhoc(0:np),x(0:np)
+double precision rho(np),rhoc(0:np),x(0:np)
 
 xmax = 10.0D0
 xstep = xmax/dble(np)
