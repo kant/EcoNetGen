@@ -65,11 +65,6 @@ test_that("we can create all types of network", {
 
 test_that("setting seed creates a reproducible network", {
 
-<<<<<<< HEAD
-=======
-  set.seed(5555555)
-  M <- netgen()
->>>>>>> human-api
   set.seed(5555555)
   M <- netgen_v1()
   set.seed(5555555)
