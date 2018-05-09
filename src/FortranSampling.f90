@@ -452,7 +452,6 @@ IF(icrit <= 2) THEN     ! sampling is Random, Lognormal or Fisher
             else
                 aux = unifrnd()
                 prob(i+ijump) = log(1.0D0/aux)
-                key_prob(i+ijump) = key_prob(i-1+ijump) + prob(i+ijump)
             end if
             if(im == 1 .and. i == 1) then
                 key_prob(i+ijump) = prob(i+ijump)
