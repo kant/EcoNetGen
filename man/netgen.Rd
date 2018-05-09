@@ -6,8 +6,11 @@
 \usage{
 netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
   min_submod_size = 1, net_type = c("mixed", "random", "scalefree",
-  "nested", "bn", "br", "tt-bn-r", "tt-bn-bn"), ave_degree = 10,
-  rewire_probs = c(0.3, 0), mod_probs = 0, verbose = FALSE)
+  "nested", "bi-partite nested", "bi-partite random",
+  "tri-trophic bipartite nested-random",
+  "tri-trophic bipartite nested-bipartite nested", "bn", "br", "tt-bn-r",
+  "tt-bn-bn"), ave_degree = 10, rewire_probs = c(0.3, 0), mod_probs = 0,
+  verbose = FALSE)
 }
 \arguments{
 \item{net_size}{network size (number of nodes)}

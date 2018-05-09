@@ -11,7 +11,7 @@ test_that("we can create a random type network", {
 })
 
 
-test_that("we can create a random type network", {
+test_that("we can create a random type network (v1)", {
   #skip_if(R.Version()$arch == "i386")
 
   net <- netgen_v1()
