@@ -1,55 +1,83 @@
 #' Network Sampling Routine
 #'
 #' @param network_in input network (as igraph object)
-#' @param module_sizes integer vector giving the size of each module (optional)
-#' @param crit sampling criteria for key nodes and neighbors, see details
-#' @param key_nodes number of key nodes to sample, from mi to mf at steps of delta-m
-#' and number of realizations nr mi, mf, delta-m, nr
-#' @param anfn  number of first neighbors or fraction of first neighbors to include, see details
-#' @param numb_hidden number of modules to exclude
-#' @param hidden_modules list of modules to exclude (max 10 modules; only the first numb_hidden are used)
-#' @details afn argument can be written in numerous ways:
-#' - if 0 < anfn <= 1 it is interpreted as a fraction of the total number of neighbors
-#' - otherwise as the number of neighbors
-#' - to add all neighbors use 1.0
-#' - to add 1 neighbor per node use 1.1
-#' - to add 2 neighbours use 2, etc
+#' @param key_nodes_sampler sampling criteria for key nodes. See details.
+#' @param neighbors_sampler sampling criteria for neighbrs. see details.
+#' @param n_key_nodes number of key nodes to sample.
+#' @param n_neighbors number of first neighbors or fraction of first neighbors.
+#'  See details.
+#' @param hidden_modules list of the modules to exclude
+#' (max 10 modules; only the first numb_hidden are used)
+#' @param module_sizes integer vector giving the size of each module. see details.
+#' @details
+#' Algorithm first samples n_key_nodes according the the requested `key_nodes_sampler`
+#' cirterion.  For each key node, the requested number or fraction of neighbors is
+#' then sampled according to the `neighbors_sampler` criterion.  Optionally, a list of
+#' modules can be designated as "hidden" and will be excluded from sampling.
 #'
-#' sampling criteria for key nodes and neighbors
+#' if `n_neighbors is greater than 1, assumes this is the number to sample.  If
+#' `n_neighbors` is between 0 and 1, assumes this is the fration of neighbors to
+#' sample.  (To sample 1 neighbor, use an explicit integer, `1L` (or as.`integer(1)`)
+#' to sample 100% of neighbors, use a numeric, 1.0.
 #'
-#' criterion for key nodes
+#' Provide `module_sizes` list to improve performance.  If not provided, this will
+#' will be calculated based on `igraph::cluster_edge_betweeness`.  Be sure to
+#' provide a `module_sizes` vector whenever calling `netsampler` repeatedly on the
+#' same network to avoid unnecessary performance hit from recalculating modules every
+#' time.  See examples.
 #'
-#' - 0 for random
-#' - 1 for lognormal
-#' - 2 for Fisher log series
-#' - 3 for exponential
-#' - 4 for degree
-#' - 5 for module
+#' @return the original input network (as an igraph network object),
+#'  with the attribute `label` added to the edges and vertices indicating
+#' if that edge or vertex was `sampled` or `unsampled`.
 #'
-#' criterion for neighbors
-#'
-#' - 0 = random
-#' - 1 = weighted according to exponential distribution
-#'
-#' @return  output files are:
-#' - out_name -- main output file with info on the sunetwork
-#' - abund.txt / degree.txt / module.txt
-#' - subnet.txt  -- sampled network
-#' - netnodes.txt -- nodes in red or blue if belong subnet or not
-#' - netlinks.txt --  links in red or blue if connect subnet or not
 #' @export
 #' @importFrom igraph cluster_edge_betweenness as.undirected groups as_adjacency_matrix
-#' delete_edge_attr E
-netsample <-
+#' delete_edge_attr E sizes
+#'
+#' @examples
+#' \donttest{
+#' net <- netgen()
+#' sample <- netsampler(net)
+#'
+#' ## Precompute `module_sizes` for replicate sampling of the same network:
+#'  library(igraph)
+#'  modules <- cluster_edge_betweenness(as.undirected(network_in))
+#'  module_sizes <- vapply(igraph::groups(modules), length, integer(1))
+#'  sample <- netsampler(net, module_sizes = module_sizes)
+#'
+#' }
+#'
+netsampler <-
   function(network_in,
-           crit = c(1,0),
-           key_nodes = c(10, 50, 10, 1000),
-           anfn = 0.5,
-           numb_hidden = 0,
-           hidden_modules = c(0,0,0,0,0,0,0,0,0,0),
+           key_nodes_sampler = c("random", "lognormal", "Fisher log series",
+                               "exponential", "degree", "module"),
+           neighbors_sampler = c("random", "exponential"),
+           n_key_nodes = 10,
+           n_neighbors = 0.5,
+           hidden_modules = NULL,
            module_sizes = NULL
            ) {
 
+    key_nodes_sampler <- match.arg(key_nodes_sampler)
+    neighbors_sampler <- match.arg(neighbors_sampler)
+
+    crit <- c(which(c("random", "lognormal", "Fisher log series",
+                      "exponential", "degree", "module") ==
+                    key_nodes_sampler) - 1,
+              which(c("random", "exponential") == neighbors_sampler) - 1
+    )
+
+    #initial, final, delta,  final & delta not used.
+    key_nodes <- c(n_key_nodes, 0, 0, 0)
+
+    if(is.integer(n_neighbors)){
+      if(n_neighbors == 1L)
+        n_neighbors <- 1.1
+    }
+
+    anfn <- n_neighbors
+
+    numb_hidden <- length(hidden_modules)
 
     ## NOTE: if module_sizes are not provided, then we calculate
     ## module sizes on the fly, though the FORTRAN netgen code
@@ -62,8 +90,7 @@ netsample <-
     if(is.null(module_sizes)){
       community <- igraph::cluster_edge_betweenness(
         igraph::as.undirected(network_in))
-      module_sizes <- vapply(igraph::groups(community),
-                             length, integer(1))
+      module_sizes <- igraph::sizes(community)
     }
 
     ## Convert igraph to integer vector
