@@ -44,7 +44,7 @@
 #' }
 netgen <- function(net_size = 50,
                    ave_module_size = 10,
-                   min_module_size = 1,
+                   min_module_size = 2,
                    min_submod_size = 1,
                    net_type = c("mixed",
                                 "random",
