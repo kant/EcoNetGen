@@ -18,9 +18,8 @@ title: EcoNetGen
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "tools/README-",
+  fig.path = "man/figures/README-",
   cache = FALSE,
-  dev = "jpeg",
   message=FALSE, 
   warning=FALSE
 )
@@ -73,13 +72,13 @@ network <- netgen(net_size = 150,
 
 We can plot the resulting `igraph` as an adjacency matrix:
 
-```{r}
+```{r, adj_plot}
 adj_plot(network)
 ```
 
 Network `igraph` objects can also be plotted using the standard `igraph` plotting routines, for example:
 
-```{r message=FALSE}
+```{r igraph_plot, message=FALSE}
 library(igraph)
 plot(network, vertex.size= 0, vertex.label=NA, 
      edge.color = rgb(.22,0,1,.02), vertex.shape="none", 
@@ -100,7 +99,7 @@ sampled <- netsampler(network,
 
 We can plot the adjacency network, coloring red the sampled nodes.  Note that `adj_plot` objects are just `ggplot` graphs (`geom_raster`) under the hood, and can be modified with the usual `ggplot` arguments, such as adding a title and changing the color theme here. 
 
-```{r message=FALSE}
+```{r sampled_adj, message=FALSE}
 library(ggplot2) # needed to modify plot
 
 adj_plot(sampled) + 
@@ -111,7 +110,7 @@ adj_plot(sampled) +
 
 Don't forget to check out the `ggraph` package, which isn't required for `EcoNetGen` but provides a lot of additional great ways to plot your network.  Here we plot the simulated network color-coding the sampled nodes and edges (indicated by the label "sampled" on vertices and edges):
 
-```{r message=FALSE, warning=FALSE}
+```{r sampled_hairball, message=FALSE, warning=FALSE}
 library(ggraph)
 ggraph(sampled, layout = 'kk') +
         geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
@@ -122,6 +121,18 @@ ggraph(sampled, layout = 'kk') +
 ```
 
 
+
+Or extract and plot just the sampled network:
+
+```{r subgraph}
+subnet <- subgraph.edges(sampled, 
+                         E(sampled)[label=="sampled"])
+
+ggraph(subnet, layout = 'graphopt') +
+        geom_edge_link(alpha=0.4) +
+        geom_node_point() +
+        theme_graph() 
+```
 
 ## A few example statistics
 
@@ -149,7 +160,7 @@ mean(degree(as.undirected(network)))
 
 We can also label and plot the clusters using a circular layout:
 
-```{r}
+```{r circle}
 V(sampled)$module <- as.character(membership(community))
 
 ggraph(sampled, layout = 'circle') +
@@ -161,26 +172,4 @@ ggraph(sampled, layout = 'circle') +
 
 
 
-
-```{r include=FALSE, eval=FALSE}
-## alternate tidygraph way
-library(tidygraph)
-as_tbl_graph(sampled, directed = FALSE) %>%
-  activate(edges) %>% 
-  mutate(module = cluster_edge_betweenness())
-
-```
-
-
-Extract and plot just the sampled network:
-
-```{r}
-subnet <- subgraph.edges(sampled, 
-                         E(sampled)[label=="sampled"])
-
-ggraph(subnet, layout = 'graphopt') +
-        geom_edge_link(alpha=0.4) +
-        geom_node_point() +
-        theme_graph() 
-```
 

@@ -19,3 +19,5 @@ quicktest.R
 ^paper$
 ^appveyor\.yml$
 ^cran-comments\.md$
+man/figures/README-circle-1.png
+
