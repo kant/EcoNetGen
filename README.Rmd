@@ -19,7 +19,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "tools/README-",
-  cache = FALSE
+  cache = FALSE,
+  dev = "jpeg",
+  message=FALSE, 
+  warning=FALSE
 )
 ```
 
@@ -54,7 +57,7 @@ This way requires you have a recent FORTRAN compiler avialble on your machine.
 
 This is a basic example which generates a network. See `?netgen` for documentation describing the parameter arguments.  Setting `verbose = FALSE` (default) surpresses the output summary message.
 
-```{r example}
+```{r example, message=TRUE}
 library(EcoNetGen)
 set.seed(123456) # for a reproducible simulation
 
