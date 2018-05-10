@@ -76,7 +76,7 @@ We can plot the resulting `igraph` as an adjacency matrix:
 adj_plot(network)
 ```
 
-![](man/figures/README-unnamed-chunk-2-1.png)<!-- -->
+![](tools/README-unnamed-chunk-2-1.png)<!-- -->
 
 Network `igraph` objects can also be plotted using the standard `igraph`
 plotting routines, for example:
@@ -88,7 +88,7 @@ plot(network, vertex.size= 0, vertex.label=NA,
      edge.curved =TRUE, layout = layout_with_kk)
 ```
 
-![](man/figures/README-unnamed-chunk-3-1.png)<!-- -->
+![](tools/README-unnamed-chunk-3-1.png)<!-- -->
 
 ## Sample from a network
 
@@ -115,7 +115,7 @@ adj_plot(sampled) +
   scale_fill_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
-![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+![](tools/README-unnamed-chunk-5-1.png)<!-- -->
 
 Don’t forget to check out the `ggraph` package, which isn’t required for
 `EcoNetGen` but provides a lot of additional great ways to plot your
@@ -133,7 +133,7 @@ ggraph(sampled, layout = 'kk') +
         scale_edge_color_manual(values = c("#ED4E33", "#3B7EA1"))
 ```
 
-![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+![](tools/README-unnamed-chunk-6-1.png)<!-- -->
 
 ## A few example statistics
 
@@ -175,7 +175,7 @@ ggraph(sampled, layout = 'circle') +
   theme_graph()
 ```
 
-![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
+![](tools/README-unnamed-chunk-10-1.png)<!-- -->
 
 Extract and plot just the sampled network:
 
@@ -189,4 +189,4 @@ ggraph(subnet, layout = 'graphopt') +
         theme_graph() 
 ```
 
-![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+![](tools/README-unnamed-chunk-12-1.png)<!-- -->
