@@ -29,7 +29,7 @@ described in de Aguiar et al. (2017)
 `EcoNetGen` is now on CRAN and can be installed in the usual way:
 
 ``` r
-install.packages("EcoNetGen")`
+install.packages("EcoNetGen")
 ```
 
 See [NEWS](NEWS.md) for a list of the most recent changes to the

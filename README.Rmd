@@ -40,7 +40,7 @@ here are described in de Aguiar et al. (2017) [arXiv:1708.01242](https://arxiv.o
 `EcoNetGen` is now on CRAN and can be installed in the usual way: 
 
 ```r
-install.packages("EcoNetGen")`
+install.packages("EcoNetGen")
 ```
 
 See [NEWS](NEWS.md) for a list of the most recent changes to the development version and current CRAN release.  You can install the current development version of `EcoNetGen` from GitHub with:
