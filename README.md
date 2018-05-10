@@ -178,15 +178,17 @@ mean(degree(as.undirected(network)))
 #> [1] 7.12
 ```
 
-We can also label and plot the clusters using a circular layout:
+We can also label and plot the cluster membership:
 
 ``` r
 V(sampled)$module <- as.character(membership(community))
+```
 
-ggraph(sampled, layout = 'circle') +
+``` r
+ggraph(sampled, layout = 'kk') +
   geom_edge_link(alpha=0.1) +
-  geom_node_point(aes(colour = module)) +
+  geom_node_point(aes(colour = module)) + 
   theme_graph()
 ```
 
-![](man/figures/README-circle-1.png)<!-- -->
+![](man/figures/README-members-1.png)<!-- -->
