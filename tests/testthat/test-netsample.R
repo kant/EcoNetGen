@@ -3,7 +3,7 @@ testthat::context("netsampler")
 testthat::test_that("we can run netsample", {
 
   library(EcoNetGen)
-  net <- netgen()
+  net <- netgen_v1()
   testthat::expect_is(net, "igraph")
   res <- netsampler(net)
   testthat::expect_is(res, "igraph")
@@ -15,7 +15,7 @@ testthat::test_that("we can run netsample", {
 
 testthat::test_that("net sample works with other settings", {
 
-  network_in <- netgen()
+  network_in <- netgen_v1()
   sn <- netsampler(network_in,
                  key_nodes_sampler = "lognormal",
                  neighbors_sampler = "exponential")
@@ -47,7 +47,7 @@ testthat::test_that("we can run netsample",{
       library(EcoNetGen)
       library(igraph)
 
-      network_in <- netgen()
+      network_in <- netgen_v1()
       out <- netsampler(network_in)
 
       ## Subset the sampled network:

@@ -19,3 +19,4 @@ quicktest.R
 ^paper$
 ^appveyor\.yml$
 ^cran-comments\.md$
+
