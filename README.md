@@ -44,7 +44,7 @@ devtools::install_github("cboettig/EcoNetGen")
 This way requires you have a recent FORTRAN compiler avialble on your
 machine.
 
-## Generate random networks
+## Randomly generate networks
 
 This is a basic example which generates a network. See `?netgen` for
 documentation describing the parameter arguments. Setting `verbose =
@@ -56,16 +56,16 @@ set.seed(123456) # for a reproducible simulation
 
 network <- netgen(net_size = 150,
                   ave_module_size = 20, 
-                  min_module_size = 20,
+                  min_module_size = 10,
                   min_submod_size = 5,
                   net_type = "bi-partite nested",
                   ave_degree = 10,
                   verbose = TRUE
                   ) 
 #> 
-#> module count = 6 
-#> average degree = 7.12 
-#> average module size = 25 
+#> module count = 8 
+#> average degree = 6.08 
+#> average module size = 18.75 
 #> number of components = 1 
 #> size of largest component = 150
 ```
@@ -158,7 +158,7 @@ number of modules:
 ``` r
 community <- cluster_edge_betweenness(as.undirected(network))
 length(groups(community))
-#> [1] 6
+#> [1] 9
 ```
 
 We can check the size of each module as well:
@@ -167,15 +167,15 @@ We can check the size of each module as well:
 module_sizes <- sizes(community)
 module_sizes
 #> Community sizes
-#>  1  2  3  4  5  6 
-#> 21 23 21 22 44 19
+#>  1  2  3  4  5  6  7  8  9 
+#> 18 19 31 19 22  7  3 20 11
 ```
 
 Average degree:
 
 ``` r
 mean(degree(as.undirected(network)))
-#> [1] 7.12
+#> [1] 6.08
 ```
 
 We can also label and plot the cluster membership:

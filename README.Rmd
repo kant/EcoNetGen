@@ -52,7 +52,7 @@ devtools::install_github("cboettig/EcoNetGen")
 
 This way requires you have a recent FORTRAN compiler avialble on your machine. 
 
-## Generate random networks
+## Randomly generate networks
 
 This is a basic example which generates a network. See `?netgen` for documentation describing the parameter arguments.  Setting `verbose = FALSE` (default) surpresses the output summary message.
 
@@ -62,7 +62,7 @@ set.seed(123456) # for a reproducible simulation
 
 network <- netgen(net_size = 150,
                   ave_module_size = 20, 
-                  min_module_size = 20,
+                  min_module_size = 10,
                   min_submod_size = 5,
                   net_type = "bi-partite nested",
                   ave_degree = 10,
