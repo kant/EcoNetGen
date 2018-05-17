@@ -45,7 +45,7 @@
 #'
 #' ## Precompute `module_sizes` for replicate sampling of the same network:
 #'  library(igraph)
-#'  modules <- cluster_edge_betweenness(as.undirected(network_in))
+#'  modules <- cluster_edge_betweenness(as.undirected(net))
 #'  module_sizes <- vapply(igraph::groups(modules), length, integer(1))
 #'  sample <- netsampler(net, module_sizes = module_sizes)
 #'

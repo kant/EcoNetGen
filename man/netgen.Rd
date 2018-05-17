@@ -9,7 +9,7 @@ netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
   "nested", "bi-partite nested", "bi-partite random",
   "tri-trophic bipartite nested-random",
   "tri-trophic bipartite nested-bipartite nested", "bn", "br", "tt-bn-r",
-  "tt-bn-bn"), ave_degree = 10, rewire_prob_global = 0.1,
+  "tt-bn-bn"), ave_degree = 10, rewire_prob_global = 0.2,
   rewire_prob_local = 0, mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0, 0),
   verbose = FALSE)
 }
@@ -28,7 +28,8 @@ netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
 
 \item{rewire_prob_global}{probability any given edge should be rewired}
 
-\item{rewire_prob_local}{probability that edges w}
+\item{rewire_prob_local}{probability that edges within a module should be rewire locally
+(within the module)}
 
 \item{mixing_probs}{module probabilities for first 7 types,
 used for constructing mixed networks}

@@ -13,7 +13,10 @@ adj_plot(graph)
 Plot network adjacency matrix
 }
 \examples{
+\donttest{
+set.seed(12345)
 graph <- netgen()
 adj_plot(graph)
+}
 
 }

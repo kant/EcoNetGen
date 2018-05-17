@@ -9,7 +9,8 @@
 #' @param net_type network type, see details
 #' @param ave_degree average degree of connection
 #' @param rewire_prob_global probability any given edge should be rewired
-#' @param rewire_prob_local probability that edges w
+#' @param rewire_prob_local probability that edges within a module should be rewire locally
+#'  (within the module)
 #' @param mixing_probs module probabilities for first 7 types,
 #'   used for constructing mixed networks
 #' @param verbose logical, default TRUE. Should a message report summary statistics?
@@ -62,7 +63,7 @@ netgen <- function(net_size = 50,
                                 "tt-bn-bn"
                                 ),
                    ave_degree = 10,
-                   rewire_prob_global = 0.1,
+                   rewire_prob_global = 0.2,
                    rewire_prob_local = 0.0,
                    mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
                    verbose = FALSE){
