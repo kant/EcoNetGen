@@ -8,8 +8,10 @@
 #' @param min_submod_size cutoff for submodules, used only for bipartite and tripartite networks
 #' @param net_type network type, see details
 #' @param ave_degree average degree of connection
-#' @param rewire_probs global and local  network rewiring probabilities
-#' @param mod_probs module probabilities for first 7 types,
+#' @param rewire_prob_global probability any given edge should be rewired
+#' @param rewire_prob_local probability that edges within a module should be rewire locally
+#'  (within the module)
+#' @param mixing_probs module probabilities for first 7 types,
 #'   used for constructing mixed networks
 #' @param verbose logical, default TRUE. Should a message report summary statistics?
 #' @details
@@ -18,8 +20,8 @@
 #' - random
 #' - scalefree
 #' - nested
-#' - bi-partite nested
-#' - bi-partite random
+#' - bi-partite nested (or short-hand "bn")
+#' - bi-partite random (or short-hand "br")
 #' - tri-trophic bipartite nested-random. (Can use short-hand "ttbnr")
 #' - tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 #'
@@ -39,6 +41,7 @@
 #' @examples
 #' library(EcoNetGen)
 #' \donttest{
+#' set.seed(12345)
 #' net <- netgen()
 #' adj_plot(net)
 #' }
@@ -60,8 +63,9 @@ netgen <- function(net_size = 50,
                                 "tt-bn-bn"
                                 ),
                    ave_degree = 10,
-                   rewire_probs = c(0.3,0.0),
-                   mod_probs = 0,
+                   rewire_prob_global = 0.2,
+                   rewire_prob_local = 0.0,
+                   mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
                    verbose = FALSE){
 
   net_type <- match.arg(net_type)
@@ -84,9 +88,9 @@ netgen <- function(net_size = 50,
   }
   n_modav <- c(net_size, ave_module_size)
   cutoffs <- c(min_module_size, min_submod_size)
-
+  rewire_probs <- c(rewire_prob_global, rewire_prob_local)
   netgen_v1(n_modav, cutoffs, net_type, ave_degree,
-            rewire_probs, mod_probs, verbose)
+            rewire_probs, mixing_probs, verbose)
 
 }
 

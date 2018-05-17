@@ -9,6 +9,9 @@
 #' @param hidden_modules list of the modules to exclude
 #' (max 10 modules; only the first numb_hidden are used)
 #' @param module_sizes integer vector giving the size of each module. see details.
+#' @param cluster_fn a clustering function, from `igraph::cluster_*`. Default is
+#' `igraph::cluster_edge_betweeness`.  Only used to compute module sizes if not
+#' provided.
 #' @details
 #' Algorithm first samples n_key_nodes according the the requested `key_nodes_sampler`
 #' cirterion.  For each key node, the requested number or fraction of neighbors is
@@ -36,12 +39,13 @@
 #'
 #' @examples
 #' \donttest{
+#' set.seed(12345)
 #' net <- netgen()
 #' sample <- netsampler(net)
 #'
 #' ## Precompute `module_sizes` for replicate sampling of the same network:
 #'  library(igraph)
-#'  modules <- cluster_edge_betweenness(as.undirected(network_in))
+#'  modules <- cluster_edge_betweenness(as.undirected(net))
 #'  module_sizes <- vapply(igraph::groups(modules), length, integer(1))
 #'  sample <- netsampler(net, module_sizes = module_sizes)
 #'
@@ -55,7 +59,8 @@ netsampler <-
            n_key_nodes = 10,
            n_neighbors = 0.5,
            hidden_modules = NULL,
-           module_sizes = NULL
+           module_sizes = NULL,
+           cluster_fn = igraph::cluster_edge_betweenness
            ) {
 
     key_nodes_sampler <- match.arg(key_nodes_sampler)
@@ -88,7 +93,7 @@ netsampler <-
     ## should be sure to include module sizes list.
 
     if(is.null(module_sizes)){
-      community <- igraph::cluster_edge_betweenness(
+      community <- cluster_fn(
         igraph::as.undirected(network_in))
       module_sizes <- igraph::sizes(community)
     }

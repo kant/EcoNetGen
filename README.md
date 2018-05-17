@@ -126,8 +126,8 @@ edges):
 ``` r
 library(ggraph)
 ggraph(sampled, layout = 'kk') +
-        geom_edge_link(aes(colour = label, lwd = label), alpha=0.4) +
-        geom_node_point(aes(colour = label)) +
+        geom_edge_link(aes(color = label), alpha=0.4) +
+        geom_node_point(aes(color = label)) +
         theme_graph() + 
         scale_color_manual(values = c("#ED4E33", "#3B7EA1")) + 
         scale_edge_color_manual(values = c("#ED4E33", "#3B7EA1"))

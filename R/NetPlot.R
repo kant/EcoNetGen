@@ -10,8 +10,11 @@
 #' @importFrom ggplot2 element_blank theme_bw xlab ylab theme geom_raster
 #' @importFrom igraph get.data.frame
 #' @examples
+#' \donttest{
+#' set.seed(12345)
 #' graph <- netgen()
 #' adj_plot(graph)
+#' }
 #'
 adj_plot <- function(graph){
 

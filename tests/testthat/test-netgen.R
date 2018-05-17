@@ -1,6 +1,6 @@
 library(testthat)
 testthat::context("netgen")
-
+set.seed(12345)
 
 test_that("we can create a random type network", {
   #skip_if(R.Version()$arch == "i386")
@@ -10,6 +10,7 @@ test_that("we can create a random type network", {
 
 })
 
+netgen_v1 <- EcoNetGen:::netgen_v1
 
 test_that("we can create a random type network (v1)", {
   #skip_if(R.Version()$arch == "i386")

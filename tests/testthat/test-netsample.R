@@ -1,6 +1,10 @@
+library(testthat)
 testthat::context("netsampler")
 
-testthat::test_that("we can run netsample", {
+set.seed(12345)
+netgen_v1 <- EcoNetGen:::netgen_v1
+
+testthat::test_that("we can run netsampler", {
 
   library(EcoNetGen)
   net <- netgen_v1()

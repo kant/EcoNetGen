@@ -7,7 +7,8 @@
 netsampler(network_in, key_nodes_sampler = c("random", "lognormal",
   "Fisher log series", "exponential", "degree", "module"),
   neighbors_sampler = c("random", "exponential"), n_key_nodes = 10,
-  n_neighbors = 0.5, hidden_modules = NULL, module_sizes = NULL)
+  n_neighbors = 0.5, hidden_modules = NULL, module_sizes = NULL,
+  cluster_fn = igraph::cluster_edge_betweenness)
 }
 \arguments{
 \item{network_in}{input network (as igraph object)}
@@ -25,6 +26,10 @@ See details.}
 (max 10 modules; only the first numb_hidden are used)}
 
 \item{module_sizes}{integer vector giving the size of each module. see details.}
+
+\item{cluster_fn}{a clustering function, from \code{igraph::cluster_*}. Default is
+\code{igraph::cluster_edge_betweeness}.  Only used to compute module sizes if not
+provided.}
 }
 \value{
 the original input network (as an igraph network object),
@@ -51,12 +56,13 @@ time.  See examples.
 }
 \examples{
 \donttest{
+set.seed(12345)
 net <- netgen()
 sample <- netsampler(net)
 
 ## Precompute `module_sizes` for replicate sampling of the same network:
  library(igraph)
- modules <- cluster_edge_betweenness(as.undirected(network_in))
+ modules <- cluster_edge_betweenness(as.undirected(net))
  module_sizes <- vapply(igraph::groups(modules), length, integer(1))
  sample <- netsampler(net, module_sizes = module_sizes)
 
