@@ -9,7 +9,8 @@ netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
   "nested", "bi-partite nested", "bi-partite random",
   "tri-trophic bipartite nested-random",
   "tri-trophic bipartite nested-bipartite nested", "bn", "br", "tt-bn-r",
-  "tt-bn-bn"), ave_degree = 10, rewire_probs = c(0.3, 0), mod_probs = 0,
+  "tt-bn-bn"), ave_degree = 10, rewire_prob_global = 0.1,
+  rewire_prob_local = 0, mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0, 0),
   verbose = FALSE)
 }
 \arguments{
@@ -25,9 +26,11 @@ netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
 
 \item{ave_degree}{average degree of connection}
 
-\item{rewire_probs}{global and local  network rewiring probabilities}
+\item{rewire_prob_global}{probability any given edge should be rewired}
 
-\item{mod_probs}{module probabilities for first 7 types,
+\item{rewire_prob_local}{probability that edges w}
+
+\item{mixing_probs}{module probabilities for first 7 types,
 used for constructing mixed networks}
 
 \item{verbose}{logical, default TRUE. Should a message report summary statistics?}
@@ -45,8 +48,8 @@ network type is one of
 \item random
 \item scalefree
 \item nested
-\item bi-partite nested
-\item bi-partite random
+\item bi-partite nested (or short-hand "bn")
+\item bi-partite random (or short-hand "br")
 \item tri-trophic bipartite nested-random. (Can use short-hand "ttbnr")
 \item tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 }
@@ -62,6 +65,7 @@ to the top of your code after running \code{library(EcoNetGen)}.
 \examples{
 library(EcoNetGen)
 \donttest{
+set.seed(12345)
 net <- netgen()
 adj_plot(net)
 }
