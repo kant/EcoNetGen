@@ -1,30 +1,26 @@
 Dear CRAN Maintainers,
 
-We are pleased to provide an intial Release of NetGen for consideration for the CRAN
-repository. 
+We are pleased to provide an update to EcoNetGen package, as 
+detailed in NEWS.md:
 
-This release now quotes names of computer languages like FORTRAN that do not trigger
-any spelling NOTE in single quotes and does not quote names of cited authors such
-as de Aguiar, which do trigger a NOTE regarding spelling, as directed by CRAN
-maintainers.  Please note that hese NOTES are not in fact spelling errors. 
 
-Thank you for all you do for the R community!
-
+* Add `netsampler()` routine
+* Modify user interface for `netgen()` to provide more self-explanatory argument names.
+* Ensure that FORTRAN correctly obeys `set.seed()` by always using the R random number generator. 
 
 ## Test environments
 
-* local OS X install, R 3.4.4
-* ubuntu 12.04 (on travis-ci), R 3.4.4
+* local OS X install, R 3.5.0
+* ubuntu 14.04 (on travis-ci), R 3.5.0
 * win-builder (devel and release)
+* Dockerized valgrind tests (debian Linux)
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+0 errors | 0 warnings | 0 notes
 
 ## Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
+There are no reverse dependencies.
 
 
