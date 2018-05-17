@@ -2,7 +2,7 @@
 #'
 #' @param network_in input network (as igraph object)
 #' @param key_nodes_sampler sampling criteria for key nodes. See details.
-#' @param neighbors_sampler sampling criteria for neighbrs. see details.
+#' @param neighbors_sampler sampling criteria for neighbors. see details.
 #' @param n_key_nodes number of key nodes to sample.
 #' @param n_neighbors number of first neighbors or fraction of first neighbors.
 #'  See details.
@@ -14,7 +14,7 @@
 #' provided.
 #' @details
 #' Algorithm first samples n_key_nodes according the the requested `key_nodes_sampler`
-#' cirterion.  For each key node, the requested number or fraction of neighbors is
+#' criterion.  For each key node, the requested number or fraction of neighbors is
 #' then sampled according to the `neighbors_sampler` criterion.  Optionally, a list of
 #' modules can be designated as "hidden" and will be excluded from sampling.
 #'

@@ -15,7 +15,7 @@ netsampler(network_in, key_nodes_sampler = c("random", "lognormal",
 
 \item{key_nodes_sampler}{sampling criteria for key nodes. See details.}
 
-\item{neighbors_sampler}{sampling criteria for neighbrs. see details.}
+\item{neighbors_sampler}{sampling criteria for neighbors. see details.}
 
 \item{n_key_nodes}{number of key nodes to sample.}
 
@@ -41,7 +41,7 @@ Network Sampling Routine
 }
 \details{
 Algorithm first samples n_key_nodes according the the requested \code{key_nodes_sampler}
-cirterion.  For each key node, the requested number or fraction of neighbors is
+criterion.  For each key node, the requested number or fraction of neighbors is
 then sampled according to the \code{neighbors_sampler} criterion.  Optionally, a list of
 modules can be designated as "hidden" and will be excluded from sampling.
 
