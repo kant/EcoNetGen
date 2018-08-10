@@ -135,7 +135,7 @@ netgen_v1 <-
     stopifnot(length(n_modav) == 2,
               length(cutoffs) == 2,
               length(net_type) == 1,
-              length(net_degree) == 10,
+              length(net_degree) == 1,
               length(mod_probs) == 7)
 
     res <- .Fortran(
