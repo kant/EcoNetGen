@@ -1,3 +1,7 @@
+# NetGen 0.2.1
+
+* fix inappropriate default in `netgen_v1` routine, and add assertion to check argument lengths.
+
 # NetGen 0.2.0
 
 * Add `netsampler()` routine

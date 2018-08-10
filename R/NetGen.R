@@ -129,8 +129,15 @@ netgen_v1 <-
            net_type = 1,
            net_degree = 10,
            net_rewire = c(0.3,0.0),
-           mod_probs = 0,
+           mod_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
            verbose = FALSE) {
+
+    stopifnot(length(n_modav) == 2,
+              length(cutoffs) == 2,
+              length(net_type) == 1,
+              length(net_degree) == 10,
+              length(mod_probs) == 7)
+
     res <- .Fortran(
       "subnetgen",
       output = integer(n_modav[1]^2),
