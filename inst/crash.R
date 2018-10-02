@@ -12,13 +12,12 @@ netgen(net_size = 50,
        rewire_prob_global = 0.3,
        rewire_prob_local = 0.1,
        mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2 ,0.2),
-       verbose = TRUE)
+       verbose = FALSE)
 )
 
 
-## Crash?
 set.seed(1234)
-replicate(1000,
+## Catches error:
           netgen(net_size = 30,
                  ave_module_size = 10,
                  min_module_size = 1,
@@ -29,7 +28,7 @@ replicate(1000,
                  rewire_prob_local = 0.0,
                  mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
                  verbose = FALSE)
-)
+
 
 
 

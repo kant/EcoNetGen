@@ -4,7 +4,7 @@
 \alias{netgen}
 \title{netgen}
 \usage{
-netgen(net_size = 50, ave_module_size = 10, min_module_size = 2,
+netgen(net_size = 50, ave_module_size = 10, min_module_size = 6,
   min_submod_size = 1, net_type = c("mixed", "random", "scalefree",
   "nested", "bi-partite nested", "bi-partite random",
   "tri-trophic bipartite nested-random",
