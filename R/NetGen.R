@@ -47,7 +47,7 @@
 #' }
 netgen <- function(net_size = 50,
                    ave_module_size = 10,
-                   min_module_size = 1,
+                   min_module_size = 2,
                    min_submod_size = 1,
                    net_type = c("mixed",
                                 "random",
@@ -62,11 +62,26 @@ netgen <- function(net_size = 50,
                                 "tt-bn-r",
                                 "tt-bn-bn"
                                 ),
-                   ave_degree = 10,
+                   ave_degree = 5,
                    rewire_prob_global = 0.2,
                    rewire_prob_local = 0.0,
                    mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
                    verbose = FALSE){
+
+  if(min_module_size < 1)
+    stop(paste("min_module_size cannot be less than 1"))
+
+  if(min_submodule_size < 1)
+    stop(paste("min_submodule_size cannot be less than 1"))
+
+  if(min_module_size <= min_submod_size){
+    stop(paste("min_module_size",
+               min_module_size,
+               "is not greater than min_submod_size",
+               min_submod_size), call. = FALSE)
+  }
+
+
 
   net_type <- match.arg(net_type)
   net_type <- switch(net_type,
@@ -86,6 +101,15 @@ netgen <- function(net_size = 50,
   if(net_type == 404){
     stop("net_type not found")
   }
+
+  if(net_type %in% c(0, 2)){
+    if(ave_degree >= min_module_size )
+    stop(paste0("Requested ave_degree (", ave_degree,
+                ") must be less requested min_module_size (",
+                min_module_size,
+                ") for 'scalefree' or 'mixed' network types"))
+  }
+
   n_modav <- c(net_size, ave_module_size)
   cutoffs <- c(min_module_size, min_submod_size)
   rewire_probs <- c(rewire_prob_global, rewire_prob_local)
