@@ -1,5 +1,6 @@
 library(testthat)
-testthat::context("netgen")
+
+context("netgen")
 set.seed(12345)
 
 test_that("we can create a random type network", {
@@ -9,6 +10,25 @@ test_that("we can create a random type network", {
   expect_is(net, "igraph")
 
 })
+
+
+test_that("testing error messages", {
+
+  expect_error(netgen(min_module_size = 1))
+
+  expect_error(netgen(net_type = "mixed",
+                      ave_degree = 10,
+                      ave_module_size = 9))
+
+  expect_error(netgen(min_module_size = 0))
+  expect_error(netgen(min_submod_size = 0))
+  expect_error(netgen(rewire_prob_global = 0))
+  expect_error(netgen(rewire_prob_global = 10))
+  expect_error(netgen(rewire_prob_local = 10))
+  expect_error(netgen(mixing_probs = 10))
+
+})
+
 
 netgen_v1 <- EcoNetGen:::netgen_v1
 

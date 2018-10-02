@@ -68,17 +68,40 @@ netgen <- function(net_size = 50,
                    mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.0 ,0.0),
                    verbose = FALSE){
 
-  if(min_module_size < 1)
-    stop(paste("min_module_size cannot be less than 1"))
+  if(sum(mixing_probs) == 0){
+    stop(paste("mixing_probs cannot all be zero"))
+  }
+  ## Normalize mixing probabilities
+  mixing_probs <- mixing_probs / sum(mixing_probs)
 
-  if(min_submod_size < 1)
-    stop(paste("min_submod_size cannot be less than 1"))
+  stopifnot(
+    ave_module_size > 1,
+    min_module_size > 1,
+    min_submod_size >= 1,
+    rewire_prob_global > 0,
+    rewire_prob_global < 1,
+    rewire_prob_local < 1,
+    length(mixing_probs) == 7
+    )
+
+  if(ave_module_size >= net_size)
+    stop(paste0("ave_module_size (",
+                ave_module_size,
+                ") must be less than net_size (",
+                net_size, ")"))
 
   if(min_module_size <= min_submod_size){
-    stop(paste("min_module_size",
+    stop(paste0("min_module_size (",
                min_module_size,
-               "is not greater than min_submod_size",
-               min_submod_size), call. = FALSE)
+               ") is not greater than min_submod_size (",
+               min_submod_size, ")"))
+  }
+
+  if(ave_module_size < min_module_size){
+    stop(paste0("ave_module_size (",
+               ave_module_size,
+               ") is not greater than or equal to min_module_size (",
+               min_module_size, ")"))
   }
 
 
