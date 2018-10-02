@@ -71,8 +71,8 @@ netgen <- function(net_size = 50,
   if(min_module_size < 1)
     stop(paste("min_module_size cannot be less than 1"))
 
-  if(min_submodule_size < 1)
-    stop(paste("min_submodule_size cannot be less than 1"))
+  if(min_submod_size < 1)
+    stop(paste("min_submod_size cannot be less than 1"))
 
   if(min_module_size <= min_submod_size){
     stop(paste("min_module_size",

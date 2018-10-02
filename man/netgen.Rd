@@ -4,14 +4,14 @@
 \alias{netgen}
 \title{netgen}
 \usage{
-netgen(net_size = 50, ave_module_size = 10, min_module_size = 1,
+netgen(net_size = 50, ave_module_size = 10, min_module_size = 2,
   min_submod_size = 1, net_type = c("mixed", "random", "scalefree",
   "nested", "bi-partite nested", "bi-partite random",
   "tri-trophic bipartite nested-random",
   "tri-trophic bipartite nested-bipartite nested", "bn", "br", "tt-bn-r",
-  "tt-bn-bn"), ave_degree = 10, rewire_prob_global = 0.2,
-  rewire_prob_local = 0, mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0, 0),
-  verbose = FALSE)
+  "tt-bn-bn"), ave_degree = 5, rewire_prob_global = 0.2,
+  rewire_prob_local = 0, mixing_probs = c(0.2, 0.2, 0.2, 0.2, 0.2, 0,
+  0), verbose = FALSE)
 }
 \arguments{
 \item{net_size}{network size (number of nodes)}
