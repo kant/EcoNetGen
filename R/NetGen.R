@@ -25,13 +25,27 @@
 #' - tri-trophic bipartite nested-random. (Can use short-hand "ttbnr")
 #' - tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 #'
-#'  NOTE: Function arguments have changed from those netgen 0.1.1 to be more intelligible.
-#'  To restore the original function api on code that depends on the old version, you
-#'  can simply add:
+#'  **Valid Parameter Ranges**
 #'
-#'  `netgen <- EcoNetGen:::netgen_v1`
+#'  Please note that not all combinations of parameters will create valid networks.
+#'  If an invalid combination is requested, `netgen()` will error with an informative
+#'  message.  A list of these constraints is provided below for reference.
 #'
-#'  to the top of your code after running `library(EcoNetGen)`.
+#'
+#' 1. `net_size >= ave_module_size`. If `net_size = ave_module_size`` the program
+#'  generates a network with a single module.
+#' 2. `ave_module_size > min_module_size`
+#' 3. `ave_degree >= 1`. Preferably larger than 4, to ensure single component modules.
+#' 4. `rewire_prob_global = 0` produces completely uncoupled modules. To ensure a single
+#'  component network use `rewire_prob_global > 0` and sufficiently large.
+#' 5. `rewire_prob_local = 0` produces idealized modules.
+#'  Use `rewire_prob_local > 0` to add stochasticity to the modules.
+#' 6. For tripartite networks `min_module_size > min_submod_size`.
+#'  This also implies `min_module_size >= 2`.
+#' 7. For scalefree networks (or mixed networks involving scalefree modules)
+#'  `ave_degree < min_module_size`
+#' 8. For mixed networks `mixing_probs` need to sum to `1`. If the sum is larger
+#'  than one, only the first types, corresponding to `sum <=1`, will be sampled.
 #'
 #' @importFrom igraph graph.data.frame graph_from_adjacency_matrix
 #' @importFrom utils read.table

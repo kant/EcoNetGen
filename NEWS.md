@@ -1,3 +1,15 @@
+# NetGen 0.2.2
+
+* Avoid potential crashes from FORTRAN code by intercepting any
+  invalid parameter combinations and returning a helpful error message.
+  Please note, this changes the default parameter settings of `min_module_size`
+  and `ave_degree`, which involved a potentially combination for scale-free
+  and thus also some mixed-type networks.  
+  
+  
+  
+  
+
 # NetGen 0.2.1
 
 * fix inappropriate default in `netgen_v1` routine, and add assertion to check argument lengths.

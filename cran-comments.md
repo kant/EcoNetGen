@@ -1,8 +1,7 @@
 Dear CRAN Maintainers,
 
-This bug-fix release resolves the error flagged under Alternative
-Issues thanks to the helpful suggestions from Prof. Ripley's email
-of April 5th.
+This bug-fix release intercepts nonsense parameter combinations
+and thows a helpful error message in these cases.  
 
 Sincerely,
 

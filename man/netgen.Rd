@@ -55,13 +55,27 @@ network type is one of
 \item tri-trophic bipartite nested-bipartite nested (Can use short-hand "ttbnbn")
 }
 
-NOTE: Function arguments have changed from those netgen 0.1.1 to be more intelligible.
-To restore the original function api on code that depends on the old version, you
-can simply add:
+\strong{Valid Parameter Ranges}
 
-\code{netgen <- EcoNetGen:::netgen_v1}
-
-to the top of your code after running \code{library(EcoNetGen)}.
+Please note that not all combinations of parameters will create valid networks.
+If an invalid combination is requested, \code{netgen()} will error with an informative
+message.  A list of these constraints is provided below for reference.
+\enumerate{
+\item \code{net_size >= ave_module_size}. If `net_size = ave_module_size`` the program
+generates a network with a single module.
+\item \code{ave_module_size > min_module_size}
+\item \code{ave_degree >= 1}. Preferably larger than 4, to ensure single component modules.
+\item \code{rewire_prob_global = 0} produces completely uncoupled modules. To ensure a single
+component network use \code{rewire_prob_global > 0} and sufficiently large.
+\item \code{rewire_prob_local = 0} produces idealized modules.
+Use \code{rewire_prob_local > 0} to add stochasticity to the modules.
+\item For tripartite networks \code{min_module_size > min_submod_size}.
+This also implies \code{min_module_size >= 2}.
+\item For scalefree networks (or mixed networks involving scalefree modules)
+\code{ave_degree < min_module_size}
+\item For mixed networks \code{mixing_probs} need to sum to \code{1}. If the sum is larger
+than one, only the first types, corresponding to \code{sum <=1}, will be sampled.
+}
 }
 \examples{
 library(EcoNetGen)
